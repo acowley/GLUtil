@@ -1,7 +1,7 @@
 -- |Utilities for working with fragment and vertex shader programs.
 module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram, namedUniform, 
-                                uniformVec, uniformMat, namedUniformMat, 
-                                uniformGLMat4) where
+                                uniformScalar, uniformVec, uniformMat, 
+                                namedUniformMat, uniformGLMat4) where
 import Control.Monad (unless)
 import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31
@@ -72,6 +72,10 @@ withHMatrix lstMat m = do
 -- discipline.
 unUL :: UniformLocation -> GLint
 unUL = unsafeCoerce
+
+-- |Set a 'UniformLocation' to a scalar value.
+uniformScalar :: UniformComponent a => UniformLocation -> SettableStateVar a
+uniformScalar loc = makeSettableStateVar $ (uniform loc $=) . Index1
 
 -- |Set a 'UniformLocation' from a list representation of a
 -- low-dimensional vector of 'GLfloat's. Only 2, 3, and 4 dimensional
