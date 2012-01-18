@@ -23,6 +23,13 @@ Source-repository this
   location: http://github.com/acowley/GLUtil.git
   tag:      0.1.0
 
+Extra-Source-Files: examples/lesson3b.lhs,
+                    examples/TGA.hs,
+                    examples/images/hello1.tga,
+                    examples/images/hello2.tga,
+                    examples/shaders/hello-gl.frag,
+                    examples/shaders/hello-gl.vert
+
 Library
   -- Modules exported by the library.
   Exposed-modules:     Graphics.GLUtil,
