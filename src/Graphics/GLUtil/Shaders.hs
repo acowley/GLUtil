@@ -5,15 +5,11 @@ module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram, namedUniform,
 import Control.Monad (unless)
 import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31
+import Graphics.GLUtil.Misc
 import Foreign.Ptr (Ptr)
-import System.IO (hPutStrLn, stderr)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- This module is based on the ogl2brick example in the GLUT package.
-
--- |Check OpenGL error flags and print them on 'stderr'.
-checkErrors :: IO ()
-checkErrors = get errors >>= mapM_ (hPutStrLn stderr . ("GL: "++) . show)
 
 -- |Load a shader program from a file.
 loadShader :: Shader s => FilePath -> IO s
@@ -22,7 +18,7 @@ loadShader filePath = do
   [shader] <- genObjectNames 1
   shaderSource shader $= [src]
   compileShader shader
-  checkErrors
+  printErrors
   ok <- get (compileStatus shader)
   infoLog <- get (shaderInfoLog shader)
   unless (null infoLog)
@@ -39,7 +35,7 @@ linkShaderProgram vs fs = do
   [prog] <- genObjectNames 1
   attachedShaders prog $= (vs, fs)
   linkProgram prog
-  checkErrors
+  printErrors
   ok <- get (linkStatus prog)
   infoLog <- get (programInfoLog prog)
   unless (null infoLog)
@@ -57,7 +53,7 @@ namedUniform :: (Uniform a) => String -> StateVar a
 namedUniform name = makeStateVar (loc >>= get) (\x -> loc >>= ($= x))
   where loc = do Just p <- get currentProgram
                  l <- get (uniformLocation p name)
-                 checkErrors
+                 printErrors
                  return $ uniform l
 
 -- Allocate an OpenGL matrix from a nested list matrix, and pass a
@@ -95,7 +91,7 @@ namedUniformMat :: String -> SettableStateVar [[GLfloat]]
 namedUniformMat var = makeSettableStateVar (\m -> loc >>= ($= m) . uniformMat)
   where loc = do Just p <- get currentProgram
                  location <- get (uniformLocation p var)
-                 checkErrors
+                 printErrors
                  return location
 
 -- |Set a uniform shader location from a nested list matrix

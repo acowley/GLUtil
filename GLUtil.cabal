@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.1.1
+Version:             0.1.2
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -11,17 +11,7 @@ Build-type:          Simple
 Description:         Helpers for working with shaders, buffer objects, and 
                      textures in OpenGL.
 
--- Extra files to be distributed with the package, such as examples or
--- a README.
--- Extra-source-files:  
-
--- Constraint on the version of Cabal needed to build this package.
 Cabal-version:       >=1.6
-
-Source-repository this
-  type:     git
-  location: http://github.com/acowley/GLUtil.git
-  tag:      0.1.0
 
 Extra-Source-Files: examples/lesson3b.lhs,
                     examples/TGA.hs,
@@ -33,6 +23,7 @@ Extra-Source-Files: examples/lesson3b.lhs,
 Library
   -- Modules exported by the library.
   Exposed-modules:     Graphics.GLUtil,
+                       Graphics.GLUtil.Misc,
                        Graphics.GLUtil.Shaders, 
                        Graphics.GLUtil.BufferObjects, 
                        Graphics.GLUtil.Textures
@@ -53,4 +44,8 @@ Library
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         
-  
+
+Source-repository this
+  type:     git
+  location: http://github.com/acowley/GLUtil.git
+  tag:      0.1.0
