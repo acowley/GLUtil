@@ -1,6 +1,7 @@
 module Graphics.GLUtil.VertexArrayObjects 
-  (VertexArrayObject(..), VAO, makeVAO, bindVertexArray) where
+  (VertexArrayObject(..), VAO, makeVAO, deleteVAO, bindVertexArray) where
 import Foreign.Marshal.Array (allocaArray)
+import Foreign.Marshal.Utils (with)
 import Foreign.Storable (peek)
 import Graphics.Rendering.OpenGL.Raw.Core31
 
@@ -17,6 +18,11 @@ makeVAO m = do vao <- allocaArray 1 $ \ptr ->
                m
                glBindVertexArray 0
                return $ VertexArrayObject vao
+
+-- |Delete a 'VertexArrayObject'. Do not use the VAO after running
+-- this action!
+deleteVAO :: VertexArrayObject -> IO ()
+deleteVAO (VertexArrayObject i) = with i $ glDeleteVertexArrays 1
 
 -- |Bind a 'VertexArrayObject', or ensure that no VAO is bound.
 bindVertexArray :: Maybe VertexArrayObject -> IO ()
