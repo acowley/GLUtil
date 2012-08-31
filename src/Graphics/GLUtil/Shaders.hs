@@ -5,7 +5,7 @@ module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram, namedUniform,
 import Control.Monad (unless)
 import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31
-import Graphics.GLUtil.Misc
+import Graphics.GLUtil.GLError
 import Foreign.Ptr (Ptr)
 import Unsafe.Coerce (unsafeCoerce)
 

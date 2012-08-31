@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Graphics.GLUtil.Misc (printError, printErrorMsg, throwError, 
-                             GLError, throwErrorMsg) where
+-- |Miscellaneous utilities for dealing with OpenGL errors.
+module Graphics.GLUtil.GLError (printError, printErrorMsg, throwError, 
+                                GLError, throwErrorMsg) where
 import Control.Exception (Exception, throwIO)
 import Control.Monad (when)
 import Data.List (intercalate)
@@ -20,19 +21,24 @@ printErrorMsg msg = do errs <- get errors
                             (putStrLn msg >> mapM_ printErr errs)
   where printErr = hPutStrLn stderr . ("  GL: "++) . show
 
+-- |An exception type for OpenGL errors.
 data GLError = GLError String deriving (Typeable)
 instance Exception GLError where
 instance Show GLError where
   show (GLError msg) = "GLError " ++ msg
 
+-- |Prefix each of a list of messages with "GL: ".
 printGLErrors :: Show a => [a] -> String
 printGLErrors = intercalate "\n  GL: " . ("" :) . map show
 
+-- |Throw an exception if there is an OpenGL error.
 throwError :: IO ()
 throwError = do errs <- get errors
                 when (not (null errs))
                      (throwIO . GLError . tail $ printGLErrors errs)
 
+-- |Throw an exception if there is an OpenGL error. The exception's
+-- error message is prefixed with the supplied 'String'.
 throwErrorMsg :: String -> IO ()
 throwErrorMsg msg = do errs <- get errors
                        when (not (null errs))

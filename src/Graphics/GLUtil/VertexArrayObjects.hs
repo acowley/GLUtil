@@ -1,3 +1,4 @@
+-- | A thin layer over OpenGL 3.1+ vertex array objects.
 module Graphics.GLUtil.VertexArrayObjects 
   (VertexArrayObject(..), VAO, makeVAO, deleteVAO, bindVertexArray) where
 import Foreign.Marshal.Array (allocaArray)
@@ -5,7 +6,12 @@ import Foreign.Marshal.Utils (with)
 import Foreign.Storable (peek)
 import Graphics.Rendering.OpenGL.Raw.Core31
 
+-- |A vertex array object captures OpenGL state needed for drawing a
+-- vertex array. It encapsulates the binding of an array buffer and an
+-- element buffer, as well as vertex attribute setup.
 newtype VertexArrayObject = VertexArrayObject GLuint
+
+-- |Short alias.
 type VAO = VertexArrayObject
 
 -- |Allocate a 'VertexArrayObject', and initialize it with the
