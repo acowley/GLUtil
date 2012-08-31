@@ -16,7 +16,7 @@ readImage = do skip 2
                skip 9
                width <- fromIntegral <$> getWord16le
                height <- fromIntegral <$> getWord16le
-               bpp <- fromIntegral <$> getWord8
+               _bpp <- fromIntegral <$> getWord8 :: Get Int
                skip 1
                let bytesPerPixel = if isColor then 3 else 1
                pixels <- getByteString (width*height*bytesPerPixel)

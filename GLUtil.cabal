@@ -5,7 +5,7 @@ License:             BSD3
 License-file:        LICENSE
 Author:              Anthony Cowley
 Maintainer:          acowley@gmail.com
-Copyright:           (c) 2011 Anthony Cowley
+Copyright:           (c) 2012 Anthony Cowley
 Category:            Graphics
 Build-type:          Simple
 Description:         Helpers for working with shaders, buffer objects, and 
@@ -13,7 +13,7 @@ Description:         Helpers for working with shaders, buffer objects, and
 
 Cabal-version:       >=1.6
 
-Extra-Source-Files: examples/lesson3b.lhs,
+Extra-Source-Files: examples/example1.hs,
                     examples/TGA.hs,
                     examples/images/hello1.tga,
                     examples/images/hello2.tga,
@@ -21,7 +21,6 @@ Extra-Source-Files: examples/lesson3b.lhs,
                     examples/shaders/hello-gl.vert
 
 Library
-  -- Modules exported by the library.
   Exposed-modules:     Graphics.GLUtil,
                        Graphics.GLUtil.Misc,
                        Graphics.GLUtil.Shaders, 
@@ -29,7 +28,6 @@ Library
                        Graphics.GLUtil.Textures,
                        Graphics.GLUtil.VertexArrayObjects
   
-  -- Packages needed in order to build this package.
   Build-depends:       base >= 4.2,
                        bytestring,
                        array,
@@ -40,12 +38,6 @@ Library
   GHC-Options:         -Odph -Wall
   HS-Source-Dirs:      src
   
-  -- Modules not exported by this package.
-  -- Other-modules:       
-  
-  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
-  -- Build-tools:         
-
 Source-repository this
   type:     git
   location: http://github.com/acowley/GLUtil.git
