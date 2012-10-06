@@ -14,7 +14,7 @@ import Foreign.Marshal.Array (withArray)
 import Foreign.Storable (Storable)
 
 -- |Pixel format of image data.
-data TexColor = TexMono | TexRGB | TexBGR
+data TexColor = TexMono | TexRGB | TexBGR | TexRGBA
 
 -- |A basic texture information record.
 data TexInfo a = TexInfo { texWidth  :: GLsizei
@@ -93,6 +93,7 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
                             _                -> loadAux Luminance' Luminance
         loadTex TexRGB = loadAux RGBA' RGB
         loadTex TexBGR = loadAux RGBA' BGR
+        loadTex TexRGBA = loadAux RGBA' RGBA
         sz = TextureSize2D (texWidth tex) (texHeight tex)
         pixelType = glType (undefined::Elem a)
         loadAux i e = withPixels (texData tex) $ 
