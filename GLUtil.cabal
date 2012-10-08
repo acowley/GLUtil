@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.2.1
+Version:             0.2.2
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -38,7 +38,7 @@ Library
   GHC-Options:         -Odph -Wall
   HS-Source-Dirs:      src
   
-Source-repository this
+source-repository this
   type:     git
   location: http://github.com/acowley/GLUtil.git
-  tag:      0.1.0
+  tag:      0.2.2
