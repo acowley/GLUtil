@@ -16,15 +16,26 @@ makeBuffer target elems = makeBufferLen target (length elems) elems
 -- |Allocate and fill a 'BufferObject' from a list of 'Storable's
 -- whose length is explicitly given. This is useful when the list is
 -- of known length, as it avoids a traversal to find the length.
-makeBufferLen :: Storable a => BufferTarget -> Int -> [a] -> IO BufferObject
+makeBufferLen :: forall a. Storable a => 
+                 BufferTarget -> Int -> [a] -> IO BufferObject
 makeBufferLen target len elems = 
     do [buffer] <- genObjectNames 1
        bindBuffer target $= Just buffer
-       let n = fromIntegral $ len * sizeOf (head elems)
+       let n = fromIntegral $ len * sizeOf (undefined::a)
        arr <- newListArray (0, len - 1) elems
        withStorableArray arr $ \ptr -> 
          bufferData target $= (n, ptr, StaticDraw)
        return buffer
+
+-- |@replaceBuffer target elements@ replaces the buffer data attached
+-- to the buffer object currently bound to @target@ with the supplied
+-- list. Any previous data is deleted.
+replaceBuffer :: forall a. Storable a => BufferTarget -> [a] -> IO ()
+replaceBuffer target elems = do arr <- newListArray (0, len - 1) elems
+                                withStorableArray arr $ \ptr ->
+                                  bufferData target $= (n, ptr, StaticDraw)
+  where len = length elems
+        n = fromIntegral $ len * sizeOf (undefined::a)
 
 -- |Allocate and fill a 'BufferObject' with the given number of bytes
 -- from the supplied pointer.
@@ -51,6 +62,14 @@ fromForeignPtr target len fptr = withForeignPtr fptr $ fromPtr target numBytes
 fromVector :: forall a. Storable a => 
               BufferTarget -> V.Vector a -> IO BufferObject
 fromVector target v = V.unsafeWith v $ fromPtr target numBytes
+  where numBytes = fromIntegral $ V.length v * sizeOf (undefined::a)
+
+-- |@replaceVector target v@ replaces the buffer data attached to the
+-- buffer object currently bound to @target@ with the supplied
+-- 'V.Vector'. Any previous data is deleted.
+replaceVector :: forall a. Storable a => BufferTarget -> V.Vector a -> IO ()
+replaceVector target v = V.unsafeWith v $ \ptr ->
+                           bufferData target $= (numBytes, ptr, StaticDraw)
   where numBytes = fromIntegral $ V.length v * sizeOf (undefined::a)
 
 -- |Produce a 'Ptr' value to be used as an offset of the given number
