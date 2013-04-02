@@ -3,9 +3,11 @@
 module Graphics.GLUtil (module Graphics.GLUtil.BufferObjects,
                         module Graphics.GLUtil.Shaders,
                         module Graphics.GLUtil.Textures,
+                        readTexture,
                         module Graphics.GLUtil.GLError,
                         module Graphics.GLUtil.VertexArrayObjects,
-                        module Graphics.GLUtil.ShaderProgram) where
+                        module Graphics.GLUtil.ShaderProgram,
+                        asUniform) where
 
 import Graphics.GLUtil.BufferObjects
 import Graphics.GLUtil.Shaders
@@ -13,3 +15,6 @@ import Graphics.GLUtil.Textures
 import Graphics.GLUtil.GLError
 import Graphics.GLUtil.VertexArrayObjects
 import Graphics.GLUtil.ShaderProgram
+
+import Graphics.GLUtil.JuicyTextures (readTexture)
+import Graphics.GLUtil.Linear (asUniform)

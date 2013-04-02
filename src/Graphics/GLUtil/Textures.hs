@@ -78,7 +78,7 @@ instance IsPixelData ShortString where
                            m (plusPtr (castPtr p :: Ptr Word16) o)
 
 -- |Create a new 2D texture with data from a 'TexInfo'.
-loadTexture :: IsPixelData a => TexInfo a -> IO (TextureObject)
+loadTexture :: IsPixelData a => TexInfo a -> IO TextureObject
 loadTexture tex = do [obj] <- genObjectNames 1
                      reloadTexture obj tex
                      return obj
