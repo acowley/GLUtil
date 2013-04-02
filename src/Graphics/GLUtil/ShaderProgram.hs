@@ -2,8 +2,9 @@
 -- programs. Provides an interface for setting attributes and
 -- uniforms.
 module Graphics.GLUtil.ShaderProgram (ShaderProgram(..), loadShaderProgram, 
-                                      enableAttrib, setAttrib, setUniform,
-                                      getAttrib, getUniform) where
+                                      loadShaderExplicit, getAttrib,
+                                      enableAttrib, setAttrib, 
+                                      setUniform, getUniform) where
 import Prelude hiding (lookup)
 import Control.Applicative (pure, (<$>), (<*>))
 import Data.Map.Strict (Map, fromList, lookup)
@@ -17,20 +18,33 @@ data ShaderProgram = ShaderProgram { attribs  :: Map String AttribLocation
                                    , uniforms :: Map String UniformLocation
                                    , program  :: Program }
 
--- |Load a 'ShaderProgram' from a vertex shader source file and a
--- fragment sahder source file. If the third argument is @Nothing@,
--- then only the active attributes and uniforms in the linked program
--- are recorded in the 'ShaderProgram'. If the third argument is @Just
--- (attribNames, uniformNames)@, then the locations associated with
--- this names are all queried and recorded in the 'ShaderProgram'.
-loadShaderProgram :: FilePath -> FilePath -> Maybe ([String],[String]) -> 
-                     IO ShaderProgram
-loadShaderProgram vsrc fsrc names = 
+-- |Load a 'ShaderProgram' from a vertex and fragment shader source
+-- files. the third argument is a tuple of the attribute names and
+-- uniform names that will be set in this program. If all attributes
+-- and uniforms are desired, consider using 'loadShaderProgram'.
+loadShaderExplicit :: FilePath -> FilePath -> ([String],[String])
+                   -> IO ShaderProgram
+loadShaderExplicit vsrc fsrc names =
   do vs <- loadShader vsrc
      fs <- loadShader fsrc
      p <- linkShaderProgram [vs] [fs]
      throwError
-     (attrs,unis) <- maybe (getActives p) (getExplicits p) names
+     (attrs,unis) <- getExplicits p names
+     return $ ShaderProgram (fromList attrs) (fromList unis) p
+
+-- |Load a 'ShaderProgram' from a vertex shader source file and a
+-- fragment shader source file. If the third argument is @Nothing@,
+-- then only the active attributes and uniforms in the linked program
+-- are recorded in the 'ShaderProgram'. If the third argument is @Just
+-- (attribNames, uniformNames)@, then the locations associated with
+-- this names are all queried and recorded in the 'ShaderProgram'.
+loadShaderProgram :: FilePath -> FilePath -> IO ShaderProgram
+loadShaderProgram vsrc fsrc = 
+  do vs <- loadShader vsrc
+     fs <- loadShader fsrc
+     p <- linkShaderProgram [vs] [fs]
+     throwError
+     (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p
 
 getActives :: Program -> 
