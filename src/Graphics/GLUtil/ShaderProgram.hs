@@ -6,17 +6,20 @@ module Graphics.GLUtil.ShaderProgram (ShaderProgram(..), loadShaderProgram,
                                       enableAttrib, setAttrib, 
                                       setUniform, getUniform) where
 import Prelude hiding (lookup)
-import Control.Applicative (pure, (<$>), (<*>))
+import Control.Applicative ((<$>), (<*>))
+import Data.List (find, findIndex)
 import Data.Map.Strict (Map, fromList, lookup)
+import Data.Maybe (isJust, isNothing, catMaybes)
 import Graphics.GLUtil.Shaders (loadShader, linkShaderProgram)
 import Graphics.GLUtil.GLError (throwError)
 import Graphics.Rendering.OpenGL
 
 -- |Representation of a GLSL shader program that has been compiled and
 -- linked.
-data ShaderProgram = ShaderProgram { attribs  :: Map String AttribLocation
-                                   , uniforms :: Map String UniformLocation
-                                   , program  :: Program }
+data ShaderProgram = 
+  ShaderProgram { attribs  :: Map String (AttribLocation, VariableType)
+                , uniforms :: Map String (UniformLocation, VariableType)
+                , program  :: Program }
 
 -- |Load a 'ShaderProgram' from a vertex and fragment shader source
 -- files. the third argument is a tuple of the attribute names and
@@ -48,41 +51,54 @@ loadShaderProgram vsrc fsrc =
      return $ ShaderProgram (fromList attrs) (fromList unis) p
 
 getActives :: Program -> 
-              IO ([(String,AttribLocation)], [(String,UniformLocation)])
-getActives p = (,) <$> (get (activeAttribs p) >>= mapM (aux (attribLocation p)))
-                   <*> (get (activeUniforms p) >>= mapM (aux (uniformLocation p)))
-  where aux f (_,_,name) = (,) <$> pure name <*> get (f name)
+              IO ( [(String, (AttribLocation, VariableType))]
+                 , [(String, (UniformLocation, VariableType))] )
+getActives p = 
+  (,) <$> (get (activeAttribs p) >>= mapM (aux (attribLocation p)))
+      <*> (get (activeUniforms p) >>= mapM (aux (uniformLocation p)))
+  where aux f (_,t,name) = get (f name) >>= \l -> return (name, (l, t))
 
 getExplicits :: Program -> ([String], [String]) ->
-                IO ([(String,AttribLocation)], [(String,UniformLocation)])
-getExplicits p (anames,unames) = (,) <$> mapM (aux (attribLocation p)) anames
-                                     <*> mapM (aux (uniformLocation p)) unames
-  where aux f name = (,) <$> pure name <*> get (f name)
+                IO ( [(String, (AttribLocation, VariableType))]
+                   , [(String, (UniformLocation, VariableType))] )
+getExplicits p (anames, unames) = 
+  do attrs <- get (activeAttribs p)
+     attrs' <- mapM (aux (get . (attribLocation p))) . checkJusts $
+               map (\a -> find (\(_,_,n) -> n == a) attrs) anames
+     unis <- get (activeUniforms p)
+     unis' <- mapM (aux (get . (uniformLocation p))) . checkJusts $
+              map (\u -> find (\(_,_,n) -> n == u) unis) unames
+     return (attrs', unis')
+  where aux f (_,t,n) = f n >>= \l -> return (n, (l,t))
+        checkJusts xs
+          | all isJust xs = catMaybes xs
+          | otherwise = let Just i = findIndex isNothing xs
+                        in error $ "Missing GLSL variable: " ++ anames !! i
 
 setUniform :: Uniform a => ShaderProgram -> String -> a -> IO ()
 setUniform sp name = maybe (const (putStrLn warn >> return ()))
-                           (\u -> let u' = uniform u
-                                  in \x -> u' $= x)
+                           (\(u,_) -> let u' = uniform u
+                                      in \x -> u' $= x)
                            (lookup name $ uniforms sp)
   where warn = "WARNING: uniform "++name++" is not active"
 
 getUniform :: ShaderProgram -> String -> UniformLocation
-getUniform sp n = maybe (error msg) id . lookup n $ uniforms sp
+getUniform sp n = maybe (error msg) fst . lookup n $ uniforms sp
   where msg = "Uniform "++show n++" is not active"
 
 setAttrib :: ShaderProgram -> String -> 
              IntegerHandling -> VertexArrayDescriptor a -> IO ()
 setAttrib sp name = maybe (\_ _ -> putStrLn warn >> return ())
-                          (\a -> let vap = vertexAttribPointer a
-                                 in \ih vad -> (($= (ih, vad)) vap))
+                          (\(a,_) -> let vap = vertexAttribPointer a
+                                     in \ih vad -> (($= (ih, vad)) vap))
                           (lookup name $ attribs sp)
   where warn = "WARNING: attrib "++name++" is not active"
 
 getAttrib :: ShaderProgram -> String -> AttribLocation
-getAttrib sp n = maybe (error msg) id . lookup n $ attribs sp
+getAttrib sp n = maybe (error msg) fst . lookup n $ attribs sp
   where msg = "Attrib "++show n++" is not active"
 
 enableAttrib :: ShaderProgram -> String -> IO ()
 enableAttrib sp name = maybe (return ())
-                             (($= Enabled) . vertexAttribArray)
+                             (($= Enabled) . vertexAttribArray . fst)
                              (lookup name $ attribs sp)

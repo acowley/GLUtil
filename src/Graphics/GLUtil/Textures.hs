@@ -7,7 +7,7 @@ import qualified Graphics.Rendering.OpenGL.GL.VertexArrays as GL
 import Data.Array.Storable (StorableArray, withStorableArray)
 import Data.ByteString.Internal (ByteString, toForeignPtr)
 import Data.Vector.Storable (Vector, unsafeWith)
-import Data.Word (Word8, Word16)
+import Data.Word (Word8, Word16, Word32)
 import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
 import Foreign.Ptr (Ptr, plusPtr, castPtr)
 import Foreign.Marshal.Array (withArray)
@@ -32,9 +32,13 @@ class Storable a => HasGLType a where
   glType :: a -> DataType
 
 instance HasGLType Int where glType _ = GL.Int
+instance HasGLType GLint where glType _ = GL.Int
 instance HasGLType Word8 where glType _ = GL.UnsignedByte
 instance HasGLType Word16 where glType _ = GL.UnsignedShort
+instance HasGLType Word32 where glType _ = GL.UnsignedInt
+instance HasGLType GLuint where glType _ = GL.UnsignedInt
 instance HasGLType Float where glType _ = GL.Float
+instance HasGLType GLfloat where glType _ = GL.Float
 
 -- |Class for containers of texture data.
 class HasGLType (Elem a) => IsPixelData a where
