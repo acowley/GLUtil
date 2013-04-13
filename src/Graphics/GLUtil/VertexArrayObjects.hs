@@ -18,6 +18,7 @@ makeVAO setup = do [vao] <- genObjectNames 1
 
 -- |Run an action with the given 'VertexArrayObject' bound.
 withVAO :: VertexArrayObject -> IO r -> IO r
-withVAO vao useIt = (bindVertexArrayObject $= Just vao)
-                    *> useIt <* 
-                    (bindVertexArrayObject $= Nothing)
+withVAO vao useIt = do bindVertexArrayObject $= Just vao
+                       r <- useIt
+                       bindVertexArrayObject $= Nothing
+                       return r

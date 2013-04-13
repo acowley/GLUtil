@@ -13,6 +13,8 @@ import Foreign.Ptr (Ptr, plusPtr, castPtr)
 import Foreign.Marshal.Array (withArray)
 import Foreign.Storable (Storable)
 
+import Graphics.GLUtil.TypeMapping (HasGLType(..))
+
 -- |Pixel format of image data.
 data TexColor = TexMono | TexRGB | TexBGR | TexRGBA
 
@@ -26,19 +28,6 @@ data TexInfo a = TexInfo { texWidth  :: GLsizei
 -- dimensions.
 texInfo :: Int -> Int -> TexColor -> a -> TexInfo a
 texInfo w h = TexInfo (fromIntegral w) (fromIntegral h)
-
--- |Open mapping from Haskell types to OpenGL types.
-class Storable a => HasGLType a where
-  glType :: a -> DataType
-
-instance HasGLType Int where glType _ = GL.Int
-instance HasGLType GLint where glType _ = GL.Int
-instance HasGLType Word8 where glType _ = GL.UnsignedByte
-instance HasGLType Word16 where glType _ = GL.UnsignedShort
-instance HasGLType Word32 where glType _ = GL.UnsignedInt
-instance HasGLType GLuint where glType _ = GL.UnsignedInt
-instance HasGLType Float where glType _ = GL.Float
-instance HasGLType GLfloat where glType _ = GL.Float
 
 -- |Class for containers of texture data.
 class HasGLType (Elem a) => IsPixelData a where

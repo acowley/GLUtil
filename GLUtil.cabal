@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.5.2
+Version:             0.5.3
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -30,6 +30,7 @@ Library
                        Graphics.GLUtil.JuicyTextures,
                        Graphics.GLUtil.VertexArrayObjects,
                        Graphics.GLUtil.Linear
+                       Graphics.GLUtil.TypeMapping
   
   Build-depends:       base >= 4.2 && < 5,
                        bytestring,

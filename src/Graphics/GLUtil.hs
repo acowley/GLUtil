@@ -7,6 +7,7 @@ module Graphics.GLUtil (module Graphics.GLUtil.BufferObjects,
                         module Graphics.GLUtil.GLError,
                         module Graphics.GLUtil.VertexArrayObjects,
                         module Graphics.GLUtil.ShaderProgram,
+                        module Graphics.GLUtil.TypeMapping,
                         asUniform) where
 
 import Graphics.GLUtil.BufferObjects
@@ -15,6 +16,7 @@ import Graphics.GLUtil.Textures
 import Graphics.GLUtil.GLError
 import Graphics.GLUtil.VertexArrayObjects
 import Graphics.GLUtil.ShaderProgram
+import Graphics.GLUtil.TypeMapping
 
 import Graphics.GLUtil.JuicyTextures (readTexture)
 import Graphics.GLUtil.Linear (asUniform)
