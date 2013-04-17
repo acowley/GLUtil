@@ -100,8 +100,8 @@ uniformMat :: UniformLocation -> SettableStateVar [[GLfloat]]
 uniformMat loc = makeSettableStateVar aux
   where aux mat = do withHMatrix mat $ \ptr ->
                        case length mat of
-                         4 -> glUniformMatrix4fv loc' 1 0 ptr
-                         3 -> glUniformMatrix3fv loc' 1 0 ptr
+                         4 -> glUniformMatrix4fv loc' 1 1 ptr
+                         3 -> glUniformMatrix3fv loc' 1 1 ptr
                          _ -> ioError . userError $ 
                               "Only 3x3 and 4x4 matrices are supported"
         loc' = unUL loc
