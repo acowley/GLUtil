@@ -7,11 +7,10 @@ import qualified Graphics.Rendering.OpenGL.GL.VertexArrays as GL
 import Data.Array.Storable (StorableArray, withStorableArray)
 import Data.ByteString.Internal (ByteString, toForeignPtr)
 import Data.Vector.Storable (Vector, unsafeWith)
-import Data.Word (Word8, Word16, Word32)
+import Data.Word (Word8, Word16)
 import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
 import Foreign.Ptr (Ptr, plusPtr, castPtr)
 import Foreign.Marshal.Array (withArray)
-import Foreign.Storable (Storable)
 
 import Graphics.GLUtil.TypeMapping (HasGLType(..))
 
