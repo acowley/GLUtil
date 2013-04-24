@@ -41,7 +41,7 @@ Library
                        OpenGLRaw >= 1.1,
                        OpenGL >= 2.4,
                        vector >= 0.7
-
+  Build-tools:         cpphs
   GHC-Options:         -Odph -Wall
   HS-Source-Dirs:      src
   
