@@ -9,7 +9,7 @@ import Data.Word
 import Foreign.Storable (Storable)
 import qualified Graphics.Rendering.OpenGL as GL
 import Graphics.Rendering.OpenGL
-import Linear (V2, V3, V4)
+import Linear (V2, V3, V4, M22, M33, M44)
 
 class HasVariableType a where
   variableType :: a -> VariableType
@@ -40,6 +40,10 @@ instance HasVariableType (V4 Word32) where variableType _ = UnsignedIntVec4
 instance HasVariableType (V2 GLuint) where variableType _ = UnsignedIntVec2
 instance HasVariableType (V3 GLuint) where variableType _ = UnsignedIntVec3
 instance HasVariableType (V4 GLuint) where variableType _ = UnsignedIntVec4
+
+instance HasVariableType (M22 GLfloat) where variableType _ = FloatMat2
+instance HasVariableType (M33 GLfloat) where variableType _ = FloatMat3
+instance HasVariableType (M44 GLfloat) where variableType _ = FloatMat4
 
 -- | Maps each 'VariableType' to its corresponding
 -- 'DataType'. Typically this indicates the element type of composite
