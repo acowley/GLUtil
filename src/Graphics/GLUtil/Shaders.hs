@@ -1,5 +1,6 @@
 -- |Utilities for working with fragment and vertex shader programs.
-module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram, namedUniform, 
+module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
+                                linkShaderProgramWith, namedUniform, 
                                 uniformScalar, uniformVec, uniformMat, 
                                 namedUniformMat, uniformGLMat4) where
 import Control.Monad (unless)
@@ -31,9 +32,18 @@ loadShader filePath = do
 
 -- |Link vertex and fragment shaders into a 'Program'.
 linkShaderProgram :: [VertexShader] -> [FragmentShader] -> IO Program
-linkShaderProgram vs fs = do
+linkShaderProgram vs fs = linkShaderProgramWith vs fs (\_ -> return ())
+
+-- |Link vertex and fragment shaders into a 'Program'. The supplied
+-- 'IO' action is run after attaching shader objects to the new
+-- program, but before linking. This supports the use of
+-- 'bindFragDataLocation' to map fragment shader outputs.
+linkShaderProgramWith :: [VertexShader] -> [FragmentShader]
+                      -> (Program -> IO ()) -> IO Program
+linkShaderProgramWith vs fs m = do
   [prog] <- genObjectNames 1
   attachedShaders prog $= (vs, fs)
+  m prog
   linkProgram prog
   printError
   ok <- get (linkStatus prog)
