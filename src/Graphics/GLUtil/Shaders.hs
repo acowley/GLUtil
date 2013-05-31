@@ -1,11 +1,20 @@
 -- |Utilities for working with fragment and vertex shader programs.
-module Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
-                                linkShaderProgramWith, namedUniform, 
+module Graphics.GLUtil.Shaders (loadShader, loadGeoShader,
+                                linkShaderProgram,
+                                linkShaderProgramWith, 
+                                linkGeoProgram, linkGeoProgramWith,
+                                namedUniform, 
                                 uniformScalar, uniformVec, uniformMat, 
                                 namedUniformMat, uniformGLMat4) where
-import Control.Monad (unless)
+import Control.Applicative ((<$>))
+import Control.Monad (unless, replicateM)
+import Foreign.C.String (peekCStringLen, withCStringLen)
+import Foreign.Marshal.Alloc (alloca, allocaBytes)
+import Foreign.Marshal.Array (withArray)
+import Foreign.Storable (peek)
 import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31
+import Graphics.Rendering.OpenGL.Raw.ARB.GeometryShader4
 import Graphics.GLUtil.GLError
 import Foreign.Ptr (Ptr)
 import Unsafe.Coerce (unsafeCoerce)
@@ -30,6 +39,39 @@ loadShader filePath = do
     ioError (userError "shader compilation failed")
   return shader
 
+-- |Specialized loading for geometry shaders that are not yet fully
+-- supported by the Haskell OpenGL package.
+loadGeoShader :: FilePath -> IO GeometryShader
+loadGeoShader filePath = do
+  src <- readFile filePath
+  [shader@(GeometryShader gid)] <- genObjectNames 1
+  setSource gid src
+  glCompileShader gid
+  printError
+  ok <- alloca $ \buf -> do
+          glGetShaderiv gid gl_COMPILE_STATUS buf
+          fmap (> 0) (peek buf)
+  infoLogLen <- alloca $ \ptr -> do glGetShaderiv gid gl_INFO_LOG_LENGTH ptr
+                                    peek ptr
+  infoLog <- alloca $ \len ->
+               allocaBytes (fromIntegral infoLogLen) $ \chars -> do 
+                 glGetShaderInfoLog gid infoLogLen len chars
+                 len' <- fromIntegral <$> peek len
+                 peekCStringLen (chars, len')
+  unless (null infoLog)
+         (mapM_ putStrLn 
+                ["Shader info log for '" ++ filePath ++ "':", infoLog, ""])
+  unless ok $ do
+    deleteObjectNames [shader]
+    ioError (userError "shader compilation failed")
+  return shader
+  where setSource i src = 
+          do withCStringLen src $ \(charBuf,len)-> do
+               withArray [charBuf] $ \charBufsBuf ->
+                 withArray [fromIntegral len] $ \lengthsBuf ->
+                   glShaderSource i 1 charBufsBuf lengthsBuf
+
+
 -- |Link vertex and fragment shaders into a 'Program'.
 linkShaderProgram :: [VertexShader] -> [FragmentShader] -> IO Program
 linkShaderProgram vs fs = linkShaderProgramWith vs fs (\_ -> return ())
@@ -40,9 +82,32 @@ linkShaderProgram vs fs = linkShaderProgramWith vs fs (\_ -> return ())
 -- 'bindFragDataLocation' to map fragment shader outputs.
 linkShaderProgramWith :: [VertexShader] -> [FragmentShader]
                       -> (Program -> IO ()) -> IO Program
-linkShaderProgramWith vs fs m = do
+linkShaderProgramWith vs fs m = linkGeoProgramWith vs [] fs m
+
+newtype GeometryShader = GeometryShader { geometryShaderID :: GLuint }
+  deriving (Eq,Ord,Show)
+
+instance ObjectName GeometryShader where
+  genObjectNames n = replicateM n $ 
+                     fmap GeometryShader (glCreateShader gl_GEOMETRY_SHADER)
+  deleteObjectNames = mapM_ (glDeleteShader . geometryShaderID)
+  isObjectName = fmap (> 0) . glIsShader . geometryShaderID
+
+-- |Link vertex, geometry, and fragment shaders into a 'Program'.
+linkGeoProgram :: [VertexShader] -> [GeometryShader] -> [FragmentShader]
+               -> IO Program
+linkGeoProgram vs gs fs = linkGeoProgramWith vs gs fs (\_ -> return ())
+
+-- |Link vertex, geometry, and fragment shaders into a 'Program'. The
+-- supplied 'IO' action is run after attaching shader objects to the
+-- new program, but before linking. This supports the use of
+-- 'bindFragDataLocation' to map fragment shader outputs.
+linkGeoProgramWith :: [VertexShader] -> [GeometryShader] -> [FragmentShader]
+                   -> (Program -> IO ()) -> IO Program
+linkGeoProgramWith vs gs fs m = do
   [prog] <- genObjectNames 1
   attachedShaders prog $= (vs, fs)
+  mapM_ (glAttachShader (unsafeCoerce prog) . geometryShaderID) gs
   m prog
   linkProgram prog
   printError
