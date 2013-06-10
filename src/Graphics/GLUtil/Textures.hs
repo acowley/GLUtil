@@ -2,6 +2,7 @@
              ScopedTypeVariables, TypeFamilies, FlexibleContexts #-}
 -- |Utilities for loading texture data.
 module Graphics.GLUtil.Textures where
+import Control.Monad (forM_)
 import Graphics.Rendering.OpenGL
 import qualified Graphics.Rendering.OpenGL.GL.VertexArrays as GL
 import Data.Array.Storable (StorableArray, withStorableArray)
@@ -82,7 +83,9 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
                            loadTex $ texColor tex
   where loadTex TexMono = case pixelType of
                             GL.UnsignedShort -> loadAux Luminance16 Luminance
+                            GL.Float         -> loadAux R32F Red
                             _                -> loadAux Luminance' Luminance
+                            
         loadTex TexRGB = loadAux RGBA' RGB
         loadTex TexBGR = loadAux RGBA' BGR
         loadTex TexRGBA = loadAux RGBA' RGBA
@@ -91,3 +94,36 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
         loadAux i e = withPixels (texData tex) $ 
                       (texImage2D Nothing NoProxy 0 i sz 0 .
                        PixelData e pixelType)
+
+-- | Set texture coordinate wrapping options for both the 'S' and 'T'
+-- dimensions of a 2D texture.
+texture2DWrap :: StateVar (Repetition, Clamping)
+texture2DWrap = makeStateVar (get (textureWrapMode Texture2D S))
+                             (forM_ [S,T] . aux)
+  where aux x d = textureWrapMode Texture2D d $= x
+
+-- | Set texture coordinate wrapping options for the 'S', 'T', and 'R'
+-- dimensions of a 3D texture.
+texture3DWrap :: StateVar (Repetition, Clamping)
+texture3DWrap = makeStateVar (get (textureWrapMode Texture2D S))
+                             (forM_ [S,T,R] . aux)
+  where aux x d = textureWrapMode Texture2D d $= x
+
+
+-- | Bind each of the given textures to successive texture units at
+-- the given 'TextureTarget'.
+withTextures :: TextureTarget -> [TextureObject] -> IO a -> IO a
+withTextures tt ts m = do mapM_ aux (zip ts [0..])
+                          r <- m
+                          cleanup 0 ts
+                          return r
+  where aux (t,i) = do activeTexture $= TextureUnit i
+                       textureBinding tt $= Just t
+        cleanup _ [] = return ()
+        cleanup i (_:ts') = do activeTexture $= TextureUnit i
+                               textureBinding Texture2D $= Nothing
+                               cleanup (i+1) ts'
+
+-- | Bind each of the given 2D textures to successive texture units.
+withTextures2D :: [TextureObject] -> IO a -> IO a
+withTextures2D = withTextures Texture2D
