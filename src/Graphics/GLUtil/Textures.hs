@@ -5,6 +5,8 @@ module Graphics.GLUtil.Textures where
 import Control.Monad (forM_)
 import Graphics.Rendering.OpenGL
 import qualified Graphics.Rendering.OpenGL.GL.VertexArrays as GL
+import Graphics.Rendering.OpenGL.Raw.Core31 (glGenerateMipmap,
+                                             gl_TEXTURE_2D, gl_TEXTURE_CUBE_MAP)
 import Data.Array.Storable (StorableArray, withStorableArray)
 import Data.ByteString.Internal (ByteString, toForeignPtr)
 import Data.Vector.Storable (Vector, unsafeWith)
@@ -127,3 +129,11 @@ withTextures tt ts m = do mapM_ aux (zip ts [0..])
 -- | Bind each of the given 2D textures to successive texture units.
 withTextures2D :: [TextureObject] -> IO a -> IO a
 withTextures2D = withTextures Texture2D
+
+-- | Generate a complete set of mipmaps for the currently bound
+-- texture object.
+generateMipmap' :: TextureTarget -> IO ()
+generateMipmap' Texture2D = glGenerateMipmap gl_TEXTURE_2D
+generateMipmap' TextureCubeMap = glGenerateMipmap gl_TEXTURE_CUBE_MAP
+generateMipmap' _ = error $ "generateMipmap' is only defined for "++
+                            "2D textures and cube maps."
