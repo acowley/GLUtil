@@ -48,4 +48,5 @@ Library
   
 source-repository this
   type:     git
+  tag:      0.6.1
   location: http://github.com/acowley/GLUtil.git
