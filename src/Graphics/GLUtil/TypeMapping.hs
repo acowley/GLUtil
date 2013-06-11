@@ -11,6 +11,9 @@ import qualified Graphics.Rendering.OpenGL as GL
 import Graphics.Rendering.OpenGL
 import Linear (V2, V3, V4, M22, M33, M44)
 
+-- | A mapping from Haskell types to values of 'VariableType'. This
+-- defines how Haskell values may be mapped to values that may be
+-- bound to GLSL variables.
 class HasVariableType a where
   variableType :: a -> VariableType
 

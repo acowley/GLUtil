@@ -1,6 +1,5 @@
 -- | A thin layer over OpenGL 3.1+ vertex array objects.
 module Graphics.GLUtil.VertexArrayObjects (makeVAO, withVAO, VAO) where
-import Control.Applicative
 import Graphics.Rendering.OpenGL
 
 -- |Short alias for 'VertexArrayObject'.

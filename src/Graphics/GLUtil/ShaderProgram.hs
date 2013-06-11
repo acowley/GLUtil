@@ -86,8 +86,10 @@ loadProgramWithAux vsrc gsrc fsrc m =
      throwError
      (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p
-     
 
+-- | Get all attributes and uniforms used by a program. Note that
+-- unused parameters may be elided by the compiler, and so will not be
+-- considered as active.
 getActives :: Program -> 
               IO ( [(String, (AttribLocation, VariableType))]
                  , [(String, (UniformLocation, VariableType))] )
@@ -96,6 +98,8 @@ getActives p =
       <*> (get (activeUniforms p) >>= mapM (aux (uniformLocation p)))
   where aux f (_,t,name) = get (f name) >>= \l -> return (name, (l, t))
 
+-- | Get the attribute and uniform locations associated with a list of
+-- the names of each.
 getExplicits :: Program -> ([String], [String]) ->
                 IO ( [(String, (AttribLocation, VariableType))]
                    , [(String, (UniformLocation, VariableType))] )
@@ -113,6 +117,8 @@ getExplicits p (anames, unames) =
           | otherwise = let Just i = findIndex isNothing xs
                         in error $ "Missing GLSL variable: " ++ anames !! i
 
+-- | Set a named uniform parameter associated with a particular shader
+-- program.
 setUniform :: Uniform a => ShaderProgram -> String -> a -> IO ()
 setUniform sp name = maybe (const (putStrLn warn >> return ()))
                            (\(u,_) -> let u' = uniform u
@@ -120,10 +126,14 @@ setUniform sp name = maybe (const (putStrLn warn >> return ()))
                            (lookup name $ uniforms sp)
   where warn = "WARNING: uniform "++name++" is not active"
 
+-- | Get the 'UniformLocation' associated with a named uniform
+-- parameter.
 getUniform :: ShaderProgram -> String -> UniformLocation
 getUniform sp n = maybe (error msg) fst . lookup n $ uniforms sp
   where msg = "Uniform "++show n++" is not active"
 
+-- | Set a named vertex attribute's 'IntegerHandling' and
+-- 'VertexArrayDescriptor'.
 setAttrib :: ShaderProgram -> String -> 
              IntegerHandling -> VertexArrayDescriptor a -> IO ()
 setAttrib sp name = maybe (\_ _ -> putStrLn warn >> return ())
@@ -132,10 +142,13 @@ setAttrib sp name = maybe (\_ _ -> putStrLn warn >> return ())
                           (lookup name $ attribs sp)
   where warn = "WARNING: attrib "++name++" is not active"
 
+-- | Get the 'AttribLocation' associated with a named vertex
+-- attribute.
 getAttrib :: ShaderProgram -> String -> AttribLocation
 getAttrib sp n = maybe (error msg) fst . lookup n $ attribs sp
   where msg = "Attrib "++show n++" is not active"
 
+-- | Enable a named vertex attribute.
 enableAttrib :: ShaderProgram -> String -> IO ()
 enableAttrib sp name = maybe (return ())
                              (($= Enabled) . vertexAttribArray . fst)

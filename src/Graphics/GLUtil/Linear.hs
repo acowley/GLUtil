@@ -6,7 +6,6 @@ module Graphics.GLUtil.Linear (AsUniform(..)) where
 import Foreign.Marshal.Array (withArray)
 import Foreign.Marshal.Utils (with)
 import Foreign.Ptr (Ptr, castPtr)
-import Foreign.Storable (Storable)
 import Graphics.Rendering.OpenGL (UniformLocation)
 import Graphics.Rendering.OpenGL.Raw.Core31
 import Linear
