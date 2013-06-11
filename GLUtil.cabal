@@ -5,7 +5,7 @@ License:             BSD3
 License-file:        LICENSE
 Author:              Anthony Cowley
 Maintainer:          acowley@gmail.com
-Copyright:           (c) 2012 Anthony Cowley
+Copyright:           (c) 2012,2013 Anthony Cowley
 Category:            Graphics
 Build-type:          Simple
 Description:         Helpers for working with shaders, buffer objects, and 
