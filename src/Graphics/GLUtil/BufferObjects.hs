@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 -- |Utilities for filling 'BufferObject's.
 module Graphics.GLUtil.BufferObjects where
+import Data.Word (Word32)
 import Graphics.Rendering.OpenGL
 import Foreign.ForeignPtr
 import Foreign.Ptr
@@ -80,3 +81,18 @@ offsetPtr = wordPtrToPtr . fromIntegral
 -- |A zero-offset 'Ptr'.
 offset0 :: Ptr a
 offset0 = offsetPtr 0
+
+-- | A class for things we know how to serialize into an OpenGL
+-- buffer.
+class BufferSource v where
+  fromSource :: BufferTarget -> v -> IO BufferObject
+
+instance Storable a => BufferSource [a] where
+  fromSource = makeBuffer
+
+instance Storable a => BufferSource (V.Vector a) where
+  fromSource = fromVector
+
+-- | Create an 'ElementArrayBuffer' from a source of 'Word32's.
+bufferIndices :: BufferSource (v Word32) => v Word32 -> IO BufferObject
+bufferIndices = fromSource ElementArrayBuffer
