@@ -20,8 +20,9 @@ Extra-Source-Files: examples/example1.hs,
                     examples/shaders/hello-gl.frag,
                     examples/shaders/hello-gl.vert
 
-source-repository head
+source-repository this
   type:     git
+  tag:      0.6.2
   location: http://github.com/acowley/GLUtil.git
 
 Library
