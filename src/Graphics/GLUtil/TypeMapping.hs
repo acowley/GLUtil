@@ -9,7 +9,7 @@ import Data.Word
 import Foreign.Storable (Storable)
 import qualified Graphics.Rendering.OpenGL as GL
 import Graphics.Rendering.OpenGL
-import Linear (V2, V3, V4, M22, M33, M44)
+import Linear (V1, V2, V3, V4, M22, M33, M44)
 
 -- | A mapping from Haskell types to values of 'VariableType'. This
 -- defines how Haskell values may be mapped to values that may be
@@ -24,22 +24,27 @@ instance HasVariableType Int32 where variableType _ = Int'
 instance HasVariableType Word32 where variableType _ = UnsignedInt'
 instance HasVariableType GLuint where variableType _ = UnsignedInt'
 
+instance HasVariableType (V1 GLfloat) where variableType _ = Float'
 instance HasVariableType (V2 GLfloat) where variableType _ = FloatVec2
 instance HasVariableType (V3 GLfloat) where variableType _ = FloatVec3
 instance HasVariableType (V4 GLfloat) where variableType _ = FloatVec4
 
+instance HasVariableType (V1 GLint) where variableType _ = Int'
 instance HasVariableType (V2 GLint) where variableType _ = IntVec2
 instance HasVariableType (V3 GLint) where variableType _ = IntVec3
 instance HasVariableType (V4 GLint) where variableType _ = IntVec4
 
+instance HasVariableType (V1 Int32) where variableType _ = Int'
 instance HasVariableType (V2 Int32) where variableType _ = IntVec2
 instance HasVariableType (V3 Int32) where variableType _ = IntVec3
 instance HasVariableType (V4 Int32) where variableType _ = IntVec4
 
+instance HasVariableType (V1 Word32) where variableType _ = UnsignedInt'
 instance HasVariableType (V2 Word32) where variableType _ = UnsignedIntVec2
 instance HasVariableType (V3 Word32) where variableType _ = UnsignedIntVec3
 instance HasVariableType (V4 Word32) where variableType _ = UnsignedIntVec4
 
+instance HasVariableType (V1 GLuint) where variableType _ = UnsignedInt'
 instance HasVariableType (V2 GLuint) where variableType _ = UnsignedIntVec2
 instance HasVariableType (V3 GLuint) where variableType _ = UnsignedIntVec3
 instance HasVariableType (V4 GLuint) where variableType _ = UnsignedIntVec4

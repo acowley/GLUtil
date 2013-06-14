@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.6.2.1
+Version:             0.6.3
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -48,7 +48,7 @@ Library
                        bytestring,
                        array,
                        containers,
-                       linear,
+                       linear >= 1.1.3,
                        JuicyPixels >= 3,
                        OpenGLRaw >= 1.1,
                        OpenGL >= 2.4,
