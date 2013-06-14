@@ -3,7 +3,7 @@
 -- direction.
 module Graphics.GLUtil.Camera2D 
   (-- * Camera movement
-   Camera, track, roll, rollRad,
+   Camera(..), track, roll, rollRad,
    -- * Camera initialization
    camera2D,
    -- * Math

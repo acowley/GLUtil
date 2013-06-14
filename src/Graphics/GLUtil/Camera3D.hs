@@ -6,7 +6,7 @@
 -- 'projectionMatrix'.
 module Graphics.GLUtil.Camera3D 
   (-- * Camera movement
-   Camera, panRad, pan, tiltRad, tilt, rollRad, roll, dolly,
+   Camera(..), panRad, pan, tiltRad, tilt, rollRad, roll, dolly,
    -- * Camera initialization
    rosCamera, fpsCamera,
    -- * Matrices
