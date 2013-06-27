@@ -86,6 +86,7 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
   where loadTex TexMono = case pixelType of
                             GL.UnsignedShort -> loadAux Luminance16 Luminance
                             GL.Float         -> loadAux R32F Red
+                            GL.UnsignedByte  -> loadAux R8 Red
                             _                -> loadAux Luminance' Luminance
                             
         loadTex TexRGB = loadAux RGBA' RGB
