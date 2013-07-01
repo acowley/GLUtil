@@ -10,7 +10,7 @@ module Graphics.GLUtil.ShaderProgram (ShaderProgram(..), loadShaderProgram,
                                       setUniform, getUniform) where
 import Prelude hiding (lookup)
 import Control.Applicative ((<$>), (<*>))
-import Data.List (find, findIndex)
+import Data.List (find, findIndex, isSuffixOf)
 import Data.Map.Strict (Map, fromList, lookup)
 import Data.Maybe (isJust, isNothing, catMaybes)
 import Graphics.GLUtil.Shaders (loadShader, loadGeoShader, linkShaderProgram,
@@ -95,8 +95,13 @@ getActives :: Program ->
                  , [(String, (UniformLocation, VariableType))] )
 getActives p = 
   (,) <$> (get (activeAttribs p) >>= mapM (aux (attribLocation p)))
-      <*> (get (activeUniforms p) >>= mapM (aux (uniformLocation p)))
+      <*> (get (activeUniforms p)
+           >>= mapM (aux (uniformLocation p) . on3 trimArray))
   where aux f (_,t,name) = get (f name) >>= \l -> return (name, (l, t))
+        on3 f (a,b,c) = (a, b, f c)
+        -- An array uniform, foo, is sometimes given the name "foo" and
+        -- sometimes the name "foo[0]". We strip off the "[0]" if present.
+        trimArray n = if "[0]" `isSuffixOf` n then take (length n - 3) n else n
 
 -- | Get the attribute and uniform locations associated with a list of
 -- the names of each.
