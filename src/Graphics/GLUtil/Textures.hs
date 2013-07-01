@@ -114,7 +114,7 @@ texture3DWrap = makeStateVar (get (textureWrapMode Texture2D S))
 
 
 -- | Bind each of the given textures to successive texture units at
--- the given 'TextureTarget'.
+-- the given 'TextureTarget' starting with texture unit 0.
 withTextures :: TextureTarget -> [TextureObject] -> IO a -> IO a
 withTextures tt ts m = do mapM_ aux (zip ts [0..])
                           r <- m
@@ -124,12 +124,27 @@ withTextures tt ts m = do mapM_ aux (zip ts [0..])
                        textureBinding tt $= Just t
         cleanup _ [] = return ()
         cleanup i (_:ts') = do activeTexture $= TextureUnit i
-                               textureBinding Texture2D $= Nothing
+                               textureBinding tt $= Nothing
                                cleanup (i+1) ts'
 
--- | Bind each of the given 2D textures to successive texture units.
+-- | Bind each of the given 2D textures to successive texture units
+-- starting with texture unit 0.
 withTextures2D :: [TextureObject] -> IO a -> IO a
 withTextures2D = withTextures Texture2D
+
+-- | Bind each of the given textures to the texture unit they are
+-- paired with. The given action is run with these bindings, then the
+-- texture bindings are reset. If you don't care which texture units
+-- are used, consider using 'withTextures' or 'withTextures2D'.
+withTexturesAt :: TextureTarget -> [(TextureObject,GLuint)] -> IO a -> IO a
+withTexturesAt tt ts m = do mapM_ aux ts
+                            r <- m
+                            mapM_ (cleanup . snd) ts
+                            return r
+  where aux (t,i) = do activeTexture $= TextureUnit i
+                       textureBinding tt $= Just t
+        cleanup i = do activeTexture $= TextureUnit i
+                       textureBinding tt $= Nothing
 
 -- | Generate a complete set of mipmaps for the currently bound
 -- texture object.
