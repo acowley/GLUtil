@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, ScopedTypeVariables, TypeSynonymInstances #-}
 -- |This module contains classes and functions to relate Haskell types
 -- with OpenGL DataTypes (typically used to describe the values stored
 -- in arrays) and VariableTypes (used as attributes and uniforms in
@@ -52,6 +52,9 @@ instance HasVariableType (V4 GLuint) where variableType _ = UnsignedIntVec4
 instance HasVariableType (M22 GLfloat) where variableType _ = FloatMat2
 instance HasVariableType (M33 GLfloat) where variableType _ = FloatMat3
 instance HasVariableType (M44 GLfloat) where variableType _ = FloatMat4
+
+instance forall t. HasVariableType t => HasVariableType [t] where 
+  variableType _ = variableType (undefined::t)
 
 -- | Maps each 'VariableType' to its corresponding
 -- 'DataType'. Typically this indicates the element type of composite

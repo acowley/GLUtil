@@ -38,6 +38,7 @@ instance AsUniform GLfloat where
 
 #define UNIFORMVEC(d) UNIFORMVEC_T(d,GLint,i); UNIFORMVEC_T(d,GLuint,ui); UNIFORMVEC_T(d,GLfloat,f)
 
+UNIFORMVEC(1)
 UNIFORMVEC(2)
 UNIFORMVEC(3)
 UNIFORMVEC(4)
@@ -60,6 +61,7 @@ instance AsUniform (M44 GLfloat) where
 
 #define UNIFORMARRAY(d) UNIFORMARRAY_T(d,GLint,i); UNIFORMARRAY_T(d,GLuint,ui); UNIFORMARRAY_T(d,GLfloat,f)
 
+UNIFORMARRAY(1)
 UNIFORMARRAY(2)
 UNIFORMARRAY(3)
 UNIFORMARRAY(4)
