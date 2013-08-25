@@ -4,14 +4,14 @@ module Graphics.GLUtil (module Graphics.GLUtil.BufferObjects,
                         module Graphics.GLUtil.Drawing,
                         module Graphics.GLUtil.Shaders,
                         module Graphics.GLUtil.Textures,
-                        readTexture,
+                        readTexture, Word32,
                         module Graphics.GLUtil.GLError,
                         module Graphics.GLUtil.VertexArrayObjects,
                         module Graphics.GLUtil.ShaderProgram,
                         module Graphics.GLUtil.TypeMapping,
                         module Graphics.GLUtil.Linear,
                         module Graphics.GLUtil.Viewport) where
-
+import Data.Word (Word32) -- Simplify bufferIndices usage
 import Graphics.GLUtil.BufferObjects
 import Graphics.GLUtil.Drawing
 import Graphics.GLUtil.Shaders
