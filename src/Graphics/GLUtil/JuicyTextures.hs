@@ -3,6 +3,7 @@
 -- to create OpenGL textuers.
 module Graphics.GLUtil.JuicyTextures where
 import Codec.Picture (readImage, DynamicImage(..), Image(..))
+import Codec.Picture.Types (convertImage, PixelRGB8)
 import Control.Applicative ((<$>))
 import Graphics.GLUtil.Textures
 import Graphics.Rendering.OpenGL (TextureObject)
@@ -20,6 +21,7 @@ readTexInfo f k = readImage f >>= either (return . Left) aux
         aux (ImageRGB8 (Image w h p)) = Right <$> k (texInfo w h TexRGB p)
         aux (ImageRGBF (Image w h p)) = Right <$> k (texInfo w h TexRGB p)
         aux (ImageRGBA8 (Image w h p)) = Right <$> k (texInfo w h TexRGBA p)
+        aux (ImageYCbCr8 img) = aux . ImageRGB8 $ convertImage img
         aux _ = return $ Left "Unsupported image format"
 
 -- | Load a 'TextureObject' from an image file. Supported formats

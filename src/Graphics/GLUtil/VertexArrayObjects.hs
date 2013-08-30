@@ -1,6 +1,6 @@
 -- | A thin layer over OpenGL 3.1+ vertex array objects.
 module Graphics.GLUtil.VertexArrayObjects 
-  (makeVAO, withVAO, deleteVAO, VAO) where
+  (makeVAO, withVAO, deleteVAO, deleteVAOs, VAO) where
 import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31 (glDeleteVertexArrays)
 import Foreign.Marshal.Array (withArrayLen)
