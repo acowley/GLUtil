@@ -3,7 +3,7 @@
 -- to create OpenGL textuers.
 module Graphics.GLUtil.JuicyTextures where
 import Codec.Picture (readImage, DynamicImage(..), Image(..))
-import Codec.Picture.Types (convertImage, PixelRGB8)
+import Codec.Picture.Types (convertImage)
 import Control.Applicative ((<$>))
 import Graphics.GLUtil.Textures
 import Graphics.Rendering.OpenGL (TextureObject)
