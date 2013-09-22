@@ -11,7 +11,7 @@ import TGA -- Small library for TGA file handling
 import Graphics.GLUtil
 
 -- | A value to carry around a shader program and its parameters.
-data Shaders = Shaders { program        :: Program
+data Shaders = Shaders { getProgram        :: Program
                        , fadeFactorU    :: UniformLocation
                        , texturesU      :: [UniformLocation] 
                        , positionA      :: AttribLocation }
@@ -40,9 +40,9 @@ makeTexture filename =
 -- | Load and compile our GLSL program, and pull out the parameters we
 -- want.
 initShaders :: IO Shaders
-initShaders = do vs <- loadShader $ "shaders" </> "hello-gl.vert"
-                 fs <- loadShader $ "shaders" </> "hello-gl.frag"
-                 p <- linkShaderProgram [vs] [fs]
+initShaders = do vs <- loadShader VertexShader $ "shaders" </> "hello-gl.vert"
+                 fs <- loadShader FragmentShader $ "shaders" </> "hello-gl.frag"
+                 p <- linkShaderProgram [vs,fs]
                  Shaders p
                    <$> get (uniformLocation p "fade_factor")
                    <*> mapM (get . uniformLocation p)
@@ -84,7 +84,7 @@ setupGeometry r = let posn = positionA (shaders r)
 drawInit :: Resources -> IO ()
 drawInit r = do clearColor $= Color4 1 1 1 1
                 clear [ColorBuffer]
-                currentProgram $= Just (program (shaders r))
+                currentProgram $= Just (getProgram (shaders r))
                 setupTexturing r
                 setupGeometry r
 

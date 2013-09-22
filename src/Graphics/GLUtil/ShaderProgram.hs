@@ -1,20 +1,23 @@
 -- |Convenience interface for working with GLSL shader
 -- programs. Provides an interface for setting attributes and
 -- uniforms.
-module Graphics.GLUtil.ShaderProgram (ShaderProgram(..), loadShaderProgram, 
-                                      loadShaderProgramWith,
-                                      loadGeoProgram,
-                                      loadGeoProgramWith,
-                                      loadShaderExplicit, 
-                                      getAttrib, enableAttrib, setAttrib, 
-                                      setUniform, getUniform) where
+module Graphics.GLUtil.ShaderProgram 
+  (-- * The ShaderProgram type
+   ShaderProgram(..), 
+   -- * Simple shader programs utilizing a vertex shader and a
+   -- fragment shader
+   simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit, 
+   -- * Explicit shader loading
+   loadShaderProgramWith,
+   -- * Working with ShaderProgram parameters
+   getAttrib, enableAttrib, setAttrib, setUniform, getUniform) where
 import Prelude hiding (lookup)
 import Control.Applicative ((<$>), (<*>))
 import Data.List (find, findIndex, isSuffixOf)
 import Data.Map.Strict (Map, fromList, lookup)
 import Data.Maybe (isJust, isNothing, catMaybes)
-import Graphics.GLUtil.Shaders (loadShader, loadGeoShader, linkShaderProgram,
-                                linkGeoProgramWith)
+import Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
+                                linkShaderProgramWith)
 import Graphics.GLUtil.GLError (throwError)
 import Graphics.Rendering.OpenGL
 
@@ -29,12 +32,12 @@ data ShaderProgram =
 -- files. the third argument is a tuple of the attribute names and
 -- uniform names that will be set in this program. If all attributes
 -- and uniforms are desired, consider using 'loadShaderProgram'.
-loadShaderExplicit :: FilePath -> FilePath -> ([String],[String])
-                   -> IO ShaderProgram
-loadShaderExplicit vsrc fsrc names =
-  do vs <- loadShader vsrc
-     fs <- loadShader fsrc
-     p <- linkShaderProgram [vs] [fs]
+simpleShaderExplicit :: FilePath -> FilePath -> ([String],[String])
+                     -> IO ShaderProgram
+simpleShaderExplicit vsrc fsrc names =
+  do vs <- loadShader VertexShader vsrc
+     fs <- loadShader FragmentShader fsrc
+     p <- linkShaderProgram [vs,fs]
      throwError
      (attrs,unis) <- getExplicits p names
      return $ ShaderProgram (fromList attrs) (fromList unis) p
@@ -42,16 +45,9 @@ loadShaderExplicit vsrc fsrc names =
 -- |Load a 'ShaderProgram' from a vertex shader source file and a
 -- fragment shader source file. The active attributes and uniforms in
 -- the linked program are recorded in the 'ShaderProgram'.
-loadShaderProgram :: FilePath -> FilePath -> IO ShaderProgram
-loadShaderProgram vsrc fsrc = loadShaderProgramWith vsrc fsrc (\_ -> return ())
-
--- |Load a 'ShaderProgram' from a vertex shader source file, a
--- geometry shader source file, and a fragment shader source file. The
--- active attributes and uniforms in the linked program are recorded
--- in the 'ShaderProgram'.
-loadGeoProgram :: FilePath -> FilePath -> FilePath -> IO ShaderProgram
-loadGeoProgram vsrc gsrc fsrc = 
-  loadGeoProgramWith vsrc gsrc fsrc (\_ -> return ())
+simpleShaderProgram :: FilePath -> FilePath -> IO ShaderProgram
+simpleShaderProgram vsrc fsrc = 
+  simpleShaderProgramWith vsrc fsrc (\_ -> return ())
 
 -- |Load a 'ShaderProgram' from a vertex shader source file and a
 -- fragment shader source file. The active attributes and uniforms in
@@ -60,29 +56,16 @@ loadGeoProgram vsrc gsrc fsrc =
 -- objects are attached to the program, but before linking. This
 -- supports the use of 'bindFragDataLocation' to map fragment shader
 -- outputs.
-loadShaderProgramWith :: FilePath -> FilePath -> (Program -> IO ())
-                      -> IO ShaderProgram
-loadShaderProgramWith vsrc fsrc m = loadProgramWithAux vsrc Nothing fsrc m
-
--- |Load a 'ShaderProgram' from a vertex shader source file, a
--- geometry shader source file, and a fragment shader source file. The
--- active attributes and uniforms in the linked program are recorded
--- in the 'ShaderProgram'. The supplied 'IO' function is applied to
--- the new program after shader objects are attached to the program,
--- but before linking. This supports the use of 'bindFragDataLocation'
--- to map fragment shader outputs.
-loadGeoProgramWith :: FilePath -> FilePath -> FilePath -> (Program -> IO ())
-                   -> IO ShaderProgram
-loadGeoProgramWith vsrc gsrc fsrc m = loadProgramWithAux vsrc (Just gsrc) fsrc m
+simpleShaderProgramWith :: FilePath -> FilePath -> (Program -> IO ())
+                        -> IO ShaderProgram
+simpleShaderProgramWith vsrc fsrc m = 
+  loadShaderProgramWith [(VertexShader, vsrc), (FragmentShader, fsrc)] m
 
 -- | Helper for @load*Program*@ variants.
-loadProgramWithAux :: FilePath -> Maybe FilePath -> FilePath
-                   -> (Program -> IO ()) -> IO ShaderProgram
-loadProgramWithAux vsrc gsrc fsrc m =
-  do vs <- loadShader vsrc
-     gs <- maybe (return []) (fmap (:[]) . loadGeoShader) gsrc
-     fs <- loadShader fsrc
-     p <- linkGeoProgramWith [vs] gs [fs] m
+loadShaderProgramWith :: [(ShaderType, FilePath)] -> (Program -> IO ())
+                      -> IO ShaderProgram
+loadShaderProgramWith sources m =
+  do p <- mapM (uncurry loadShader) sources >>= flip linkShaderProgramWith m
      throwError
      (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p

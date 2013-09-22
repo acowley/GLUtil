@@ -49,7 +49,7 @@ parameters to the shader, and an attribute accessed by the shader.
 
 > data Shaders = Shaders { vertexShader   :: VertexShader
 >                        , fragmentShader :: FragmentShader
->                        , program        :: Program
+>                        , getProgram        :: Program
 >                        , fadeFactorU    :: UniformLocation
 >                        , texturesU      :: [UniformLocation] 
 >                        , positionA      :: AttribLocation }
@@ -100,9 +100,9 @@ and fragment shaders, then linking them into a program. We then query
 the program to get addresses for the uniform parameters and attribute
 that we will use to communicate data to the shader program.
 
-> initShaders = do vs <- loadShader $ "shaders" </> "hello-gl.vert"
->                  fs <- loadShader $ "shaders" </> "hello-gl.frag"
->                  p <- linkShaderProgram [vs] [fs]
+> initShaders = do vs <- loadShader VertexShader $ "shaders" </> "hello-gl.vert"
+>                  fs <- loadShader FragmentShader $ "shaders" </> "hello-gl.frag"
+>                  p <- linkShaderProgram [vs, fs]
 >                  Shaders vs fs p
 >                    <$> get (uniformLocation p "fade_factor")
 >                    <*> mapM (get . uniformLocation p)
@@ -160,7 +160,7 @@ textured geometry.
 > draw r' = do clearColor $= Color4 1 1 1 1
 >              clear [ColorBuffer]
 >              r <- readIORef r'
->              currentProgram $= Just (program (shaders r))
+>              currentProgram $= Just (getProgram (shaders r))
 >              uniform (fadeFactorU (shaders r)) $= Index1 (fadeFactor r)
 >              setupTexturing r
 >              setupGeometry r

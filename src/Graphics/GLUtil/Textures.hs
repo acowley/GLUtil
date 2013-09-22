@@ -95,7 +95,7 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
         sz = TextureSize2D (texWidth tex) (texHeight tex)
         pixelType = glType (undefined::Elem a)
         loadAux i e = withPixels (texData tex) $ 
-                      (texImage2D Nothing NoProxy 0 i sz 0 .
+                      (texImage2D Texture2D NoProxy 0 i sz 0 .
                        PixelData e pixelType)
 
 -- | Set texture coordinate wrapping options for both the 'S' and 'T'
@@ -115,7 +115,7 @@ texture3DWrap = makeStateVar (get (textureWrapMode Texture2D S))
 
 -- | Bind each of the given textures to successive texture units at
 -- the given 'TextureTarget' starting with texture unit 0.
-withTextures :: TextureTarget -> [TextureObject] -> IO a -> IO a
+withTextures :: BindableTextureTarget t => t -> [TextureObject] -> IO a -> IO a
 withTextures tt ts m = do mapM_ aux (zip ts [0..])
                           r <- m
                           cleanup 0 ts
@@ -136,7 +136,8 @@ withTextures2D = withTextures Texture2D
 -- paired with. The given action is run with these bindings, then the
 -- texture bindings are reset. If you don't care which texture units
 -- are used, consider using 'withTextures' or 'withTextures2D'.
-withTexturesAt :: TextureTarget -> [(TextureObject,GLuint)] -> IO a -> IO a
+withTexturesAt :: BindableTextureTarget t
+               => t -> [(TextureObject,GLuint)] -> IO a -> IO a
 withTexturesAt tt ts m = do mapM_ aux ts
                             r <- m
                             mapM_ (cleanup . snd) ts
@@ -146,10 +147,13 @@ withTexturesAt tt ts m = do mapM_ aux ts
         cleanup i = do activeTexture $= TextureUnit i
                        textureBinding tt $= Nothing
 
--- | Generate a complete set of mipmaps for the currently bound
--- texture object.
-generateMipmap' :: TextureTarget -> IO ()
-generateMipmap' Texture2D = glGenerateMipmap gl_TEXTURE_2D
-generateMipmap' TextureCubeMap = glGenerateMipmap gl_TEXTURE_CUBE_MAP
-generateMipmap' _ = error $ "generateMipmap' is only defined for "++
-                            "2D textures and cube maps."
+class MipMappable t where
+  -- | Generate a complete set of mipmaps for the currently bound
+  -- texture object.
+  generateMipmap' :: t -> IO ()
+
+instance MipMappable TextureTarget2D where
+  generateMipmap' _ = glGenerateMipmap gl_TEXTURE_2D
+
+instance MipMappable TextureTargetCubeMap where
+  generateMipmap' _ = glGenerateMipmap gl_TEXTURE_CUBE_MAP
