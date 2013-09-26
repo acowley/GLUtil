@@ -4,8 +4,7 @@
 module Graphics.GLUtil.ShaderProgram 
   (-- * The ShaderProgram type
    ShaderProgram(..), 
-   -- * Simple shader programs utilizing a vertex shader and a
-   -- fragment shader
+   -- * Simple shader programs utilizing a vertex shader and a fragment shader
    simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit, 
    -- * Explicit shader loading
    loadShaderProgramWith,
