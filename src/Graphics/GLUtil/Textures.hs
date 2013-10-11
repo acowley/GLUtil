@@ -12,7 +12,7 @@ import Data.ByteString.Internal (ByteString, toForeignPtr)
 import Data.Vector.Storable (Vector, unsafeWith)
 import Data.Word (Word8, Word16)
 import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
-import Foreign.Ptr (Ptr, plusPtr, castPtr)
+import Foreign.Ptr (Ptr, plusPtr, castPtr, nullPtr)
 import Foreign.Marshal.Array (withArray)
 
 import Graphics.GLUtil.TypeMapping (HasGLType(..))
@@ -71,6 +71,11 @@ instance IsPixelData ShortString where
   withPixels (ShortString b) m = aux. toForeignPtr $ b
     where aux (fp,o,_) = withForeignPtr fp $ \p ->
                            m (plusPtr (castPtr p :: Ptr Word16) o)
+
+-- |Create a new 2D texture with uninitialized contents.
+freshTexture :: forall a proxy. HasGLType a
+             => Int -> Int -> TexColor -> proxy a -> IO TextureObject
+freshTexture w h c _ = loadTexture $ texInfo w h c (nullPtr::Ptr a)
 
 -- |Create a new 2D texture with data from a 'TexInfo'.
 loadTexture :: IsPixelData a => TexInfo a -> IO TextureObject

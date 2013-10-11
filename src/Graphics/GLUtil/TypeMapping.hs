@@ -90,7 +90,6 @@ variableDataType _ = error "Unsupported variable type!"
 class Storable a => HasGLType a where
   glType :: a -> DataType
 
-instance HasGLType Int where glType _ = GL.Int
 instance HasGLType GLint where glType _ = GL.Int
 instance HasGLType Word8 where glType _ = GL.UnsignedByte
 instance HasGLType Word16 where glType _ = GL.UnsignedShort
