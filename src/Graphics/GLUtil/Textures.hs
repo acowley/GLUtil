@@ -77,6 +77,14 @@ freshTexture :: forall a proxy. HasGLType a
              => Int -> Int -> TexColor -> proxy a -> IO TextureObject
 freshTexture w h c _ = loadTexture $ texInfo w h c (nullPtr::Ptr a)
 
+-- |Create a new 2D texture with uninitialized 'Word8' contents.
+freshTextureWord8 :: Int -> Int -> TexColor -> IO TextureObject
+freshTextureWord8 w h c = loadTexture $ texInfo w h c (nullPtr::Ptr Word8)
+
+-- |Create a new 2D texture with uninitialized 'GLfloat' contents.
+freshTextureFloat :: Int -> Int -> TexColor -> IO TextureObject
+freshTextureFloat w h c = loadTexture $ texInfo w h c (nullPtr::Ptr GLfloat)
+
 -- |Create a new 2D texture with data from a 'TexInfo'.
 loadTexture :: IsPixelData a => TexInfo a -> IO TextureObject
 loadTexture tex = do [obj] <- genObjectNames 1
