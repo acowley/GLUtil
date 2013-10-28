@@ -48,6 +48,7 @@ Library
                        bytestring,
                        array,
                        containers >= 0.5,
+                       cpphs,
                        linear >= 1.1.3,
                        JuicyPixels >= 3,
                        OpenGLRaw >= 1.1,
