@@ -7,7 +7,7 @@ module Graphics.GLUtil.ShaderProgram
    -- * Simple shader programs utilizing a vertex shader and a fragment shader
    simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit, 
    -- * Explicit shader loading
-   loadShaderProgramWith,
+   loadShaderProgram, loadShaderProgramWith,
    -- * Working with ShaderProgram parameters
    getAttrib, enableAttrib, setAttrib, setUniform, getUniform) where
 import Prelude hiding (lookup)
@@ -68,6 +68,12 @@ loadShaderProgramWith sources m =
      throwError
      (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p
+
+-- |Load a 'ShaderProgram' from a list of individual shaders. The
+-- active attributes and uniforms in the linked program are recorded
+-- in the 'ShaderProgram'
+loadShaderProgram :: [(ShaderType, FilePath)] -> IO ShaderProgram
+loadShaderProgram = flip loadShaderProgramWith (const (return ()))
 
 -- | Get all attributes and uniforms used by a program. Note that
 -- unused parameters may be elided by the compiler, and so will not be
