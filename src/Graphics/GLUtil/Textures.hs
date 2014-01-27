@@ -18,7 +18,7 @@ import Foreign.Marshal.Array (withArray)
 import Graphics.GLUtil.TypeMapping (HasGLType(..))
 
 -- |Pixel format of image data.
-data TexColor = TexMono | TexRGB | TexBGR | TexRGBA
+data TexColor = TexMono | TexRG | TexRGB | TexBGR | TexRGBA
 
 -- |A basic texture information record.
 data TexInfo a = TexInfo { texWidth  :: GLsizei
@@ -101,7 +101,14 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
                             GL.Float         -> loadAux R32F Red
                             GL.UnsignedByte  -> loadAux R8 Red
                             _                -> loadAux Luminance' Luminance
-                            
+        loadTex TexRG = case pixelType of
+                          GL.UnsignedShort -> loadAux RG16 RGInteger
+                          GL.Float -> loadAux RG32F RG
+                          GL.UnsignedByte -> loadAux RG8UI RGInteger
+                          GL.Byte -> loadAux RG8I RGInteger
+                          GL.Int -> loadAux RG32I RGInteger
+                          GL.UnsignedInt -> loadAux RG32UI RGInteger
+                          _ -> error "Unknown pixelType for TexRG"
         loadTex TexRGB = loadAux RGBA' RGB
         loadTex TexBGR = loadAux RGBA' BGR
         loadTex TexRGBA = loadAux RGBA' RGBA
