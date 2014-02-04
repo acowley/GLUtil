@@ -1,5 +1,5 @@
 -- |Utilities for working with fragment and vertex shader programs.
-module Graphics.GLUtil.Shaders (loadShader,
+module Graphics.GLUtil.Shaders (loadShader, loadShaderBS,
                                 linkShaderProgram, linkShaderProgramWith,
                                 namedUniform, 
                                 uniformScalar, uniformVec, uniformMat, 
@@ -14,11 +14,14 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- 'loadShader' is based on the ogl2brick example in the GLUT package.
 
--- |Load a shader program from a file.
 loadShader :: ShaderType -> FilePath -> IO Shader
-loadShader st filePath = do
+loadShader st filePath = BS.readFile filePath >>= loadShaderBS filePath st
+
+-- |Load a shader program from a file.
+loadShaderBS :: String -> ShaderType -> BS.ByteString -> IO Shader
+loadShaderBS filePath st src = do
   shader <- createShader st
-  BS.readFile filePath >>= (shaderSourceBS shader $=)
+  shaderSourceBS shader $= src
   compileShader shader
   printError
   ok <- get (compileStatus shader)
