@@ -60,6 +60,9 @@ simpleShaderProgram :: FilePath -> FilePath -> IO ShaderProgram
 simpleShaderProgram vsrc fsrc = 
   simpleShaderProgramWith vsrc fsrc (\_ -> return ())
 
+-- |Load a 'ShaderProgram' from vertex and fragment shader source
+-- strings. The active attributes and uniforms in the linked program
+-- are recorded in the 'ShaderProgram'.
 simpleShaderProgramBS :: BS.ByteString -> BS.ByteString -> IO ShaderProgram
 simpleShaderProgramBS vsrc fsrc =
   simpleShaderProgramWithBS vsrc fsrc (\_ -> return ())
@@ -76,6 +79,8 @@ simpleShaderProgramWith :: FilePath -> FilePath -> (Program -> IO ())
 simpleShaderProgramWith vsrc fsrc m = 
   loadShaderProgramWith [(VertexShader, vsrc), (FragmentShader, fsrc)] m
 
+-- |Load a 'ShaderProgram' from vertex and fragment shader source
+-- strings. See 'simpleShaderProgramWith' for more information.
 simpleShaderProgramWithBS :: BS.ByteString -> BS.ByteString
                           -> (Program -> IO ()) -> IO ShaderProgram
 simpleShaderProgramWithBS vsrc fsrc m =
@@ -99,12 +104,15 @@ loadShaderProgramWith' load sources m =
      (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p
 
--- |Load a 'ShaderProgram' from a list of individual shaders. The
--- active attributes and uniforms in the linked program are recorded
--- in the 'ShaderProgram'
+-- |Load a 'ShaderProgram' from a list of individual shader program
+-- files. The active attributes and uniforms in the linked program are
+-- recorded in the 'ShaderProgram'
 loadShaderProgram :: [(ShaderType, FilePath)] -> IO ShaderProgram
 loadShaderProgram = flip loadShaderProgramWith (const (return ()))
 
+-- | Load a 'ShaderProgram' from a list of individual shader program
+-- source strings. The active attributes and uniforms in the linked program are
+-- recorded in the 'ShaderProgram'
 loadShaderProgramBS :: [(ShaderType, BS.ByteString)] -> IO ShaderProgram
 loadShaderProgramBS = flip loadShaderProgramWithBS (const (return ()))
 

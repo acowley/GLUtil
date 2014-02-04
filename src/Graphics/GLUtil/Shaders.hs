@@ -14,11 +14,13 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- 'loadShader' is based on the ogl2brick example in the GLUT package.
 
+-- |Load a shader program from a file.
 loadShader :: ShaderType -> FilePath -> IO Shader
 loadShader st filePath = BS.readFile filePath >>= loadShaderBS filePath st
 
--- |Load a shader program from a file.
-loadShaderBS :: String -> ShaderType -> BS.ByteString -> IO Shader
+-- | @loadShaderBS fileName shaderType src@ loads a shader from source
+-- code, @src@. The file name is used only for error reporting.
+loadShaderBS :: FilePath -> ShaderType -> BS.ByteString -> IO Shader
 loadShaderBS filePath st src = do
   shader <- createShader st
   shaderSourceBS shader $= src
