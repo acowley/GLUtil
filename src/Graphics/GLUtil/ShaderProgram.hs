@@ -5,18 +5,21 @@ module Graphics.GLUtil.ShaderProgram
   (-- * The ShaderProgram type
    ShaderProgram(..), 
    -- * Simple shader programs utilizing a vertex shader and a fragment shader
-   simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit, 
+   simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit,
+   simpleShaderProgramBS, simpleShaderProgramWithBS, simpleShaderExplicitBS,
    -- * Explicit shader loading
    loadShaderProgram, loadShaderProgramWith,
+   loadShaderProgramBS, loadShaderProgramWithBS,
    -- * Working with ShaderProgram parameters
    getAttrib, enableAttrib, setAttrib, setUniform, getUniform) where
 import Prelude hiding (lookup)
 import Control.Applicative ((<$>), (<*>))
+import qualified Data.ByteString as BS
 import Data.List (find, findIndex, isSuffixOf)
 import Data.Map.Strict (Map, fromList, lookup)
 import Data.Maybe (isJust, isNothing, catMaybes)
 import Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
-                                linkShaderProgramWith)
+                                linkShaderProgramWith, loadShaderBS)
 import Graphics.GLUtil.GLError (throwError)
 import Graphics.Rendering.OpenGL
 
@@ -33,9 +36,18 @@ data ShaderProgram =
 -- and uniforms are desired, consider using 'loadShaderProgram'.
 simpleShaderExplicit :: FilePath -> FilePath -> ([String],[String])
                      -> IO ShaderProgram
-simpleShaderExplicit vsrc fsrc names =
-  do vs <- loadShader VertexShader vsrc
-     fs <- loadShader FragmentShader fsrc
+simpleShaderExplicit = simpleShaderExplicit' loadShader
+
+simpleShaderExplicitBS :: BS.ByteString -> BS.ByteString -> ([String],[String])
+                     -> IO ShaderProgram
+simpleShaderExplicitBS = simpleShaderExplicit' (loadShaderBS "ByteString literal")
+
+simpleShaderExplicit' :: (ShaderType -> a -> IO Shader)
+                      -> a -> a -> ([String],[String])
+                      -> IO ShaderProgram
+simpleShaderExplicit' load vsrc fsrc names =
+  do vs <- load VertexShader vsrc
+     fs <- load FragmentShader fsrc
      p <- linkShaderProgram [vs,fs]
      throwError
      (attrs,unis) <- getExplicits p names
@@ -47,6 +59,10 @@ simpleShaderExplicit vsrc fsrc names =
 simpleShaderProgram :: FilePath -> FilePath -> IO ShaderProgram
 simpleShaderProgram vsrc fsrc = 
   simpleShaderProgramWith vsrc fsrc (\_ -> return ())
+
+simpleShaderProgramBS :: BS.ByteString -> BS.ByteString -> IO ShaderProgram
+simpleShaderProgramBS vsrc fsrc =
+  simpleShaderProgramWithBS vsrc fsrc (\_ -> return ())
 
 -- |Load a 'ShaderProgram' from a vertex shader source file and a
 -- fragment shader source file. The active attributes and uniforms in
@@ -60,11 +76,25 @@ simpleShaderProgramWith :: FilePath -> FilePath -> (Program -> IO ())
 simpleShaderProgramWith vsrc fsrc m = 
   loadShaderProgramWith [(VertexShader, vsrc), (FragmentShader, fsrc)] m
 
--- | Helper for @load*Program*@ variants.
+simpleShaderProgramWithBS :: BS.ByteString -> BS.ByteString
+                          -> (Program -> IO ()) -> IO ShaderProgram
+simpleShaderProgramWithBS vsrc fsrc m =
+  loadShaderProgramWithBS [(VertexShader, vsrc), (FragmentShader, fsrc)] m
+
 loadShaderProgramWith :: [(ShaderType, FilePath)] -> (Program -> IO ())
                       -> IO ShaderProgram
-loadShaderProgramWith sources m =
-  do p <- mapM (uncurry loadShader) sources >>= flip linkShaderProgramWith m
+loadShaderProgramWith = loadShaderProgramWith' loadShader
+
+loadShaderProgramWithBS :: [(ShaderType, BS.ByteString)] -> (Program -> IO ())
+                        -> IO ShaderProgram
+loadShaderProgramWithBS = loadShaderProgramWith' (loadShaderBS "ByteString literal")
+
+-- | Helper for @load*Program*@ variants.
+loadShaderProgramWith' :: (ShaderType -> a -> IO Shader)
+                       -> [(ShaderType, a)] -> (Program -> IO ())
+                       -> IO ShaderProgram
+loadShaderProgramWith' load sources m =
+  do p <- mapM (uncurry load) sources >>= flip linkShaderProgramWith m
      throwError
      (attrs,unis) <- getActives p
      return $ ShaderProgram (fromList attrs) (fromList unis) p
@@ -74,6 +104,9 @@ loadShaderProgramWith sources m =
 -- in the 'ShaderProgram'
 loadShaderProgram :: [(ShaderType, FilePath)] -> IO ShaderProgram
 loadShaderProgram = flip loadShaderProgramWith (const (return ()))
+
+loadShaderProgramBS :: [(ShaderType, BS.ByteString)] -> IO ShaderProgram
+loadShaderProgramBS = flip loadShaderProgramWithBS (const (return ()))
 
 -- | Get all attributes and uniforms used by a program. Note that
 -- unused parameters may be elided by the compiler, and so will not be
