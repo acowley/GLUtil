@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.7.4
+Version:             0.7.5
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -53,6 +53,7 @@ Library
                        JuicyPixels >= 3,
                        OpenGLRaw >= 1.1,
                        OpenGL >= 2.9,
+                       transformers >= 0.3,
                        vector >= 0.7
   Build-tools:         cpphs
   GHC-Options:         -Odph -Wall
