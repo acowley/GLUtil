@@ -99,11 +99,13 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
   where loadTex TexMono = case pixelType of
                             GL.UnsignedShort -> loadAux Luminance16 Luminance
                             GL.Float         -> loadAux R32F Red
+                            GL.HalfFloat     -> loadAux R16F Red
                             GL.UnsignedByte  -> loadAux R8 Red
                             _                -> loadAux Luminance' Luminance
         loadTex TexRG = case pixelType of
                           GL.UnsignedShort -> loadAux RG16 RGInteger
                           GL.Float -> loadAux RG32F RG
+                          GL.HalfFloat -> loadAux RG16F RG
                           GL.UnsignedByte -> loadAux RG8UI RGInteger
                           GL.Byte -> loadAux RG8I RGInteger
                           GL.Int -> loadAux RG32I RGInteger
@@ -139,6 +141,7 @@ withTextures :: BindableTextureTarget t => t -> [TextureObject] -> IO a -> IO a
 withTextures tt ts m = do mapM_ aux (zip ts [0..])
                           r <- m
                           cleanup 0 ts
+                          activeTexture $= TextureUnit 0
                           return r
   where aux (t,i) = do activeTexture $= TextureUnit i
                        textureBinding tt $= Just t
