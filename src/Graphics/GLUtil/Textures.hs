@@ -169,14 +169,3 @@ withTexturesAt tt ts m = do mapM_ aux ts
                        textureBinding tt $= Just t
         cleanup i = do activeTexture $= TextureUnit i
                        textureBinding tt $= Nothing
-
-class MipMappable t where
-  -- | Generate a complete set of mipmaps for the currently bound
-  -- texture object.
-  generateMipmap' :: t -> IO ()
-
-instance MipMappable TextureTarget2D where
-  generateMipmap' _ = glGenerateMipmap gl_TEXTURE_2D
-
-instance MipMappable TextureTargetCubeMap where
-  generateMipmap' _ = glGenerateMipmap gl_TEXTURE_CUBE_MAP

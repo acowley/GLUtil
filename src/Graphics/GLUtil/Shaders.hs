@@ -29,10 +29,10 @@ loadShaderBS filePath st src = do
   ok <- get (compileStatus shader)
   infoLog <- get (shaderInfoLog shader)
   unless (null infoLog)
-         (mapM_ putStrLn 
+         (mapM_ putStrLn
                 ["Shader info log for '" ++ filePath ++ "':", infoLog, ""])
   unless ok $ do
-    deleteObjectNames [shader]
+    deleteObjectName shader
     ioError (userError "shader compilation failed")
   return shader
 
