@@ -5,8 +5,6 @@ module Graphics.GLUtil.Textures where
 import Control.Monad (forM_)
 import Graphics.Rendering.OpenGL
 import qualified Graphics.Rendering.OpenGL.GL.VertexArrays as GL
-import Graphics.Rendering.OpenGL.Raw.Core31 (glGenerateMipmap,
-                                             gl_TEXTURE_2D, gl_TEXTURE_CUBE_MAP)
 import Data.Array.Storable (StorableArray, withStorableArray)
 import Data.ByteString.Internal (ByteString, toForeignPtr)
 import Data.Vector.Storable (Vector, unsafeWith)

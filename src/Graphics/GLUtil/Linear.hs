@@ -1,4 +1,5 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts, ScopedTypeVariables #-}
+{-# LANGUAGE DefaultSignatures, FlexibleInstances, FlexibleContexts,
+             ScopedTypeVariables #-}
 {-# OPTIONS_GHC -cpp -pgmPcpphs -optP--cpp -optP--hashes #-}
 -- |Support for writing "Linear" types to uniform locations in
 -- shader programs.
@@ -6,15 +7,18 @@ module Graphics.GLUtil.Linear (AsUniform(..)) where
 import Foreign.Marshal.Array (withArray)
 import Foreign.Marshal.Utils (with)
 import Foreign.Ptr (Ptr, castPtr)
-import Graphics.Rendering.OpenGL (UniformLocation)
+import Graphics.Rendering.OpenGL
 import Graphics.Rendering.OpenGL.Raw.Core31
 import Linear
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | A type class for things we can write to uniform locations in
--- shader programs.
+-- shader programs. We can provide instances of this class for types
+-- from "Linear" without introducing orphan instances.
 class AsUniform t where
   asUniform :: t -> UniformLocation -> IO ()
+  default asUniform :: Uniform t => t -> UniformLocation -> IO ()
+  asUniform x loc = uniform loc $= x
 
 getUL :: UniformLocation -> GLint
 getUL = unsafeCoerce
@@ -33,6 +37,20 @@ instance AsUniform GLuint where
 
 instance AsUniform GLfloat where
   x `asUniform` loc = with x $ glUniform1fv (getUL loc) 1
+
+instance AsUniform TextureUnit where
+instance UniformComponent a => AsUniform (Index1 a) where
+instance UniformComponent a => AsUniform (Color4 a) where
+instance UniformComponent a => AsUniform (Color3 a) where
+instance UniformComponent a => AsUniform (FogCoord1 a) where
+instance UniformComponent a => AsUniform (Normal3 a) where
+instance UniformComponent a => AsUniform (TexCoord4 a) where
+instance UniformComponent a => AsUniform (TexCoord3 a) where
+instance UniformComponent a => AsUniform (TexCoord2 a) where
+instance UniformComponent a => AsUniform (TexCoord1 a) where
+instance UniformComponent a => AsUniform (Vertex4 a) where
+instance UniformComponent a => AsUniform (Vertex3 a) where
+instance UniformComponent a => AsUniform (Vertex2 a) where
 
 #define UNIFORMVEC_T(d,ht,glt) instance AsUniform (V ## d ht) where {v `asUniform` loc = with v $ glUniform##d##glt##v (getUL loc) 1 . castVecComponent}
 

@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.7.5
+Version:             0.8
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -18,7 +18,8 @@ Extra-Source-Files: examples/example1.hs,
                     examples/images/hello1.tga,
                     examples/images/hello2.tga,
                     examples/shaders/hello-gl.frag,
-                    examples/shaders/hello-gl.vert
+                    examples/shaders/hello-gl.vert,
+                    CHANGELOG.md
 
 -- source-repository this
 --   type:     git

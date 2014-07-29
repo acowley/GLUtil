@@ -18,6 +18,7 @@ import qualified Data.ByteString as BS
 import Data.List (find, findIndex, isSuffixOf)
 import Data.Map.Strict (Map, fromList, lookup)
 import Data.Maybe (isJust, isNothing, catMaybes)
+import Graphics.GLUtil.Linear (AsUniform(..))
 import Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
                                 linkShaderProgramWith, loadShaderBS)
 import Graphics.GLUtil.GLError (throwError)
@@ -153,10 +154,9 @@ getExplicits p (anames, unames) =
 
 -- | Set a named uniform parameter associated with a particular shader
 -- program.
-setUniform :: Uniform a => ShaderProgram -> String -> a -> IO ()
+setUniform :: AsUniform a => ShaderProgram -> String -> a -> IO ()
 setUniform sp name = maybe (const (putStrLn warn >> return ()))
-                           (\(u,_) -> let u' = uniform u
-                                      in \x -> u' $= x)
+                           (flip asUniform . fst)
                            (lookup name $ uniforms sp)
   where warn = "WARNING: uniform "++name++" is not active"
 
