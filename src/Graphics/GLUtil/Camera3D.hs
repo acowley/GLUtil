@@ -4,13 +4,13 @@
 -- 'camMatrix' -- that transforms points into the camera's coordinate
 -- frame -- with a perspective projection matrix, as created by
 -- 'projectionMatrix'.
-module Graphics.GLUtil.Camera3D 
+module Graphics.GLUtil.Camera3D
   (-- * Camera movement
    Camera(..), panRad, pan, tiltRad, tilt, rollRad, roll, dolly,
    -- * Camera initialization
    rosCamera, fpsCamera,
    -- * Matrices
-   projectionMatrix, camMatrix,
+   projectionMatrix, orthoMatrix, camMatrix,
    -- * Miscellaneous
    deg2rad) where
 import Linear (Conjugate(conjugate), Epsilon, V3(..), V4(..))
@@ -90,12 +90,22 @@ fpsCamera = Camera (V3 0 0 (-1)) (V3 0 1 0) (V3 1 0 0) 1 0
 -- given in radians, aspect ratio, and near and far clipping planes.
 projectionMatrix :: (Conjugate a, Epsilon a, RealFloat a)
                  => a -> a -> a -> a -> M44 a
-projectionMatrix fovy aspect near far = 
+projectionMatrix fovy aspect near far =
   V4 (V4 (focal / aspect) 0 0 0)
      (V4 0 focal 0 0)
      (V4 0 0 ((far+near) / (near - far)) ((2*far*near) / (near - far)))
      (V4 0 0 (-1) 0)
   where focal = 1 / tan (fovy * 0.5)
+
+-- | @orthoMatrix left right top bottom near far@ produces a parallel
+-- projection matrix with the specified left, right, top, bottom, near and
+-- far clipping planes.
+orthoMatrix :: (Num a, Fractional a) => a -> a -> a -> a -> a -> a -> M44 a
+orthoMatrix left right top bottom near far =
+    V4 (V4 (2/(right-left)) 0 0 (-(right+left)/(right-left)) )
+       (V4 0 (2/(top-bottom)) 0 (-(top+bottom)/(top-bottom)) )
+       (V4 0 0 (-2/(far-near)) (-(far+near)/(far-near)) )
+       (V4 0 0 0 1)
 
 -- | Produce a transformation matrix from a 'Camera'. This matrix
 -- transforms homogenous points into the camera's coordinate frame.
