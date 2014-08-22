@@ -7,6 +7,7 @@ module Graphics.GLUtil.ShaderProgram
    -- * Simple shader programs utilizing a vertex shader and a fragment shader
    simpleShaderProgram, simpleShaderProgramWith, simpleShaderExplicit,
    simpleShaderProgramBS, simpleShaderProgramWithBS, simpleShaderExplicitBS,
+   loadShaderFamily,
    -- * Explicit shader loading
    loadShaderProgram, loadShaderProgramWith,
    loadShaderProgramBS, loadShaderProgramWithBS,
@@ -23,6 +24,8 @@ import Graphics.GLUtil.Shaders (loadShader, linkShaderProgram,
                                 linkShaderProgramWith, loadShaderBS)
 import Graphics.GLUtil.GLError (throwError)
 import Graphics.Rendering.OpenGL
+import System.Directory (doesFileExist)
+import System.FilePath ((<.>))
 
 -- |Representation of a GLSL shader program that has been compiled and
 -- linked.
@@ -116,6 +119,21 @@ loadShaderProgram = flip loadShaderProgramWith (const (return ()))
 -- recorded in the 'ShaderProgram'
 loadShaderProgramBS :: [(ShaderType, BS.ByteString)] -> IO ShaderProgram
 loadShaderProgramBS = flip loadShaderProgramWithBS (const (return ()))
+
+-- | Load a shader program from vertex, geometry, and fragment shaders
+-- that all share the same root file name and the various conventional
+-- extensions: \".vert\", \".geom\", and \".frag\". If a specific file
+-- doesn't exist, such as a geometry shader, it is skipped. For
+-- instance, @loadShaderFamily "simple"@ will load and compile,
+-- \"simple.vert\" and \"simple.frag\" if those files exist.
+loadShaderFamily :: FilePath -> IO ShaderProgram
+loadShaderFamily root = mapM aux shaderTypes >>= loadShaderProgram . catMaybes
+  where shaderTypes = [ (VertexShader, "vert")
+                      , (GeometryShader, "geom")
+                      , (FragmentShader, "frag") ]
+        aux (tag, ext) = let f = root <.> ext
+                         in doesFileExist f >>= \b -> return $
+                              if b then Just (tag, f) else Nothing
 
 -- | Get all attributes and uniforms used by a program. Note that
 -- unused parameters may be elided by the compiler, and so will not be

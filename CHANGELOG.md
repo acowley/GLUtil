@@ -1,3 +1,11 @@
+0.8.1
+---
+
+* Added `orthoMatrix` to `Camera3D`
+
+* Added `loadShaderFamily` to load all vertex, geometry, and fragment
+  shaders based on a root file name.
+
 0.8
 ---
 
