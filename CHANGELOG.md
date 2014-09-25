@@ -1,3 +1,8 @@
+0.8.2
+---
+
+* Do not print shader info log if it contains only \NUL
+
 0.8.1
 ---
 
