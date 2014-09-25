@@ -28,7 +28,7 @@ loadShaderBS filePath st src = do
   printError
   ok <- get (compileStatus shader)
   infoLog <- get (shaderInfoLog shader)
-  unless (null infoLog)
+  unless (null infoLog || infoLog == "\NUL")
          (mapM_ putStrLn
                 ["Shader info log for '" ++ filePath ++ "':", infoLog, ""])
   unless ok $ do
