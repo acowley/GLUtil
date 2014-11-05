@@ -1,14 +1,16 @@
 -- | A port of the code presented at [Modern OpenGL with
 -- Haskell](http://www.arcadianvisions.com/blog/?p=224) to use the
 -- GLFW-b package.
+import Prelude hiding (init)
 import Control.Applicative
-import Control.Monad (when)
+import Control.Monad (unless, when)
+import Data.Maybe (isNothing)
+import Foreign.Storable (sizeOf)
+import Graphics.GLUtil
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLFW
-import Foreign.Storable (sizeOf)
 import System.FilePath ((</>))
 import TGA -- Small library for TGA file handling
-import Graphics.GLUtil
 
 -- | A value to carry around a shader program and its parameters.
 data Shaders = Shaders { getProgram        :: Program
@@ -93,19 +95,23 @@ draw r = do uniform (fadeFactorU (shaders r)) $= Index1 (fadeFactor r)
             drawElements TriangleStrip 4 UnsignedInt offset0
 
 animate :: Resources -> IO Resources
-animate r = do seconds <- getTime
+animate r = do Just seconds <- getTime
                let fade = sin seconds * 0.5 + 0.5
                return r { fadeFactor = realToFrac fade }
 
 main :: IO ()
-main = do _ <- initialize
-          _ <- openWindow opts
-          setWindowTitle "Chapter 2"
-          makeResources >>= (>>) <$> drawInit <*> go
-  where opts = defaultDisplayOptions { displayOptions_width = 500
-                                     , displayOptions_height = 500
-                                     , displayOptions_refreshRate = Just 100 }
-        go r = do draw r
-                  swapBuffers
-                  pollEvents
-                  keyIsPressed KeyEsc >>= flip when (animate r >>= go) . not
+main = do ok <- init
+          when (not ok) (error "Error initializing GLFW!")
+          windowHint $ WindowHint'RefreshRate 100
+          m@(~(Just w)) <- createWindow 500 500 "Chapter 2" Nothing Nothing
+          when (isNothing m) (error "Couldn't create window!")
+          makeContextCurrent m
+          setWindowTitle w "Chapter 2"
+          r0 <- makeResources
+          drawInit r0
+          let keyIsPressed k = (== KeyState'Pressed) <$> getKey w k
+              go r = do draw r
+                        swapBuffers w
+                        pollEvents
+                        keyIsPressed Key'Escape >>= flip unless (animate r >>= go)
+          go r0
