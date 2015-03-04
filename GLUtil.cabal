@@ -49,7 +49,6 @@ Library
                        bytestring,
                        array,
                        containers >= 0.5,
-                       cpphs,
                        directory,
                        filepath,
                        linear >= 1.1.3,
