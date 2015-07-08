@@ -26,15 +26,15 @@ data Camera a = Camera { forward     :: V3 a
                        , location    :: V3 a }
 
 -- | Pan a camera view (turn side-to-side) by an angle given in
--- radians. Panning is about the world's up-axis as captured by the
--- initial camera state (e.g. the positive Y axis for 'fpsCamera').
+-- radians. Panning is about the camera's up-axis (e.g. the positive
+-- Y axis for 'fpsCamera').
 panRad :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
 panRad theta c = c { orientation = orientation c * r }
   where r = axisAngle (upward c) theta
 
 -- | Pan a camera view (turn side-to-side) by an angle given in
--- degrees. Panning is about the world's up-axis as captured by the
--- initial camera state (e.g. the positive Y axis for 'fpsCamera').
+-- degrees. Panning is about the camera's up-axis (e.g. the positive
+-- Y axis for 'fpsCamera').
 pan :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
 pan = panRad . deg2rad
 
