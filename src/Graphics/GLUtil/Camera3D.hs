@@ -7,15 +7,18 @@
 module Graphics.GLUtil.Camera3D
   (-- * Camera movement
    Camera(..), panRad, pan, tiltRad, tilt, rollRad, roll, dolly,
+   panGlobalRad, panGlobal, tiltGlobalRad, tiltGlobal, rollGlobalRad,
+   rollGlobal,
    -- * Camera initialization
    rosCamera, fpsCamera,
    -- * Matrices
    projectionMatrix, orthoMatrix, camMatrix,
    -- * Miscellaneous
    deg2rad) where
-import Linear (Conjugate(conjugate), Epsilon, V3(..), V4(..))
-import Linear.Matrix (mkTransformation, M44)
-import Linear.Quaternion (Quaternion, axisAngle, rotate)
+import           Linear            (Conjugate (conjugate), Epsilon, V3 (..),
+                                    V4 (..))
+import           Linear.Matrix     (M44, mkTransformation)
+import           Linear.Quaternion (Quaternion, axisAngle, rotate)
 
 -- | A 'Camera' may be translated and rotated to provide a coordinate
 -- frame into which 3D points may be transformed.
@@ -38,6 +41,19 @@ panRad theta c = c { orientation = orientation c * r }
 pan :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
 pan = panRad . deg2rad
 
+-- | Pan a camera view (turn side-to-side) by an angle given in
+-- radians. Panning is about the world's up-axis as captured by the
+-- initial camera state (e.g. the positive Y axis for 'fpsCamera').
+panGlobalRad :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+panGlobalRad theta c = c { orientation = r * orientation c }
+  where r = axisAngle (upward c) theta
+
+-- | Pan a camera view (turn side-to-side) by an angle given in
+-- degrees. Panning is about the world's up-axis as captured by the
+-- initial camera state (e.g. the positive Y axis for 'fpsCamera').
+panGlobal :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+panGlobal = panGlobalRad . deg2rad
+
 -- | Tilt a camera view (up-and-down) by an angle given in
 -- radians. Tilting is about the camera's horizontal axis (e.g. the
 -- positive X axis for 'fpsCamera').
@@ -51,6 +67,19 @@ tiltRad theta c = c { orientation = orientation c * r }
 tilt :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
 tilt = tiltRad . deg2rad
 
+-- | Tilt a camera view (up-and-down) by an angle given in
+-- radians. Tilting is about the world's horizontal axis as captured by
+-- the initial camera state (e.g. the positive X axis for 'fpsCamera').
+tiltGlobalRad :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+tiltGlobalRad theta c = c { orientation = r * orientation c }
+  where r = axisAngle (rightward c) theta
+
+-- | Tilt a camera view (up-and-down) by an angle given in degrees.
+-- Tilting is about the world's horizontal axis as captured by the
+-- initial camera state (e.g. the positive X axis for 'fpsCamera').
+tiltGlobal :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+tiltGlobal = tiltGlobalRad . deg2rad
+
 -- | Roll a camera view about its view direction by an angle given in
 -- radians. Rolling is about the camera's forward axis (e.g. the
 -- negative Z axis for 'fpsCamera').
@@ -63,6 +92,19 @@ rollRad theta c = c { orientation = orientation c * r }
 -- negative Z axis for 'fpsCamera').
 roll :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
 roll = rollRad . deg2rad
+
+-- | Roll a camera view about its view direction by an angle given in
+-- radians. Rolling is about the world's forward axis as captured by
+-- the initial camera state (e.g. the negative Z axis for 'fpsCamera').
+rollGlobalRad :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+rollGlobalRad theta c = c { orientation = r * orientation c }
+  where r = axisAngle (forward c) theta
+
+-- | Roll a camera view about its view direction by an angle given in
+-- degrees. Rolling is about the world's forward axis as captured by the
+-- initial camera state (e.g. the negative Z axis for 'fpsCamera').
+rollGlobal :: (Epsilon a, RealFloat a) => a -> Camera a -> Camera a
+rollGlobal = rollGlobalRad . deg2rad
 
 -- | Translate a camera's position by the given vector.
 dolly :: (Conjugate a, Epsilon a, RealFloat a) => V3 a -> Camera a -> Camera a
