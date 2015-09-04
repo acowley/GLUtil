@@ -1,6 +1,6 @@
 {-# LANGUAGE DefaultSignatures, FlexibleInstances, FlexibleContexts,
              ScopedTypeVariables #-}
-{-# OPTIONS_GHC -cpp -pgmPcpphs -optP--cpp -optP--hashes #-}
+{-# OPTIONS_GHC -cpp -pgmPhpp -optP--cpp #-}
 -- |Support for writing "Linear" types to uniform locations in
 -- shader programs.
 module Graphics.GLUtil.Linear (AsUniform(..)) where
