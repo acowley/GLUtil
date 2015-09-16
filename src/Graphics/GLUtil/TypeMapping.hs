@@ -78,11 +78,11 @@ variableDataType UnsignedIntVec4 = GL.UnsignedInt
 variableDataType FloatMat2 = GL.Float
 variableDataType FloatMat3 = GL.Float
 variableDataType FloatMat4 = GL.Float
-variableDataType FloatMat2x3 = GL.Float	
-variableDataType FloatMat2x4 = GL.Float	 
-variableDataType FloatMat3x2 = GL.Float	 
-variableDataType FloatMat3x4 = GL.Float	 
-variableDataType FloatMat4x2 = GL.Float	 
+variableDataType FloatMat2x3 = GL.Float
+variableDataType FloatMat2x4 = GL.Float
+variableDataType FloatMat3x2 = GL.Float
+variableDataType FloatMat3x4 = GL.Float
+variableDataType FloatMat4x2 = GL.Float
 variableDataType FloatMat4x3 = GL.Float
 variableDataType _ = error "Unsupported variable type!"
 
