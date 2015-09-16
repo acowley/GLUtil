@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.8.7
+Version:             0.8.8
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -51,13 +51,18 @@ Library
                        containers >= 0.5,
                        directory,
                        filepath,
-                       hpp >= 0.1 && < 0.2,
                        linear >= 1.1.3,
                        JuicyPixels >= 3,
                        OpenGLRaw >= 1.1,
                        OpenGL >= 2.9.2 && < 2.14,
                        transformers >= 0.3,
                        vector >= 0.7
-  Build-tools:         
+  if impl(ghc >= 7.10.1)
+    Build-depends:     hpp >= 0.1 && < 0.2
+    GHC-Options:       -pgmPhpp -optP--cpp
+  else
+    Build-tools:       cpphs
+    GHC-Options:       -pgmPcpphs -optP--cpp -optP--hashes
+
   GHC-Options:         -Odph -Wall
   HS-Source-Dirs:      src
