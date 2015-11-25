@@ -1,3 +1,7 @@
+# 0.8.8
+
+* Update to `hpp-0.3.0`
+
 # 0.8.7
 
 * Use `hpp` as a preprocessor rather than `cpphs`
