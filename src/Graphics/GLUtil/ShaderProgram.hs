@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -- |Convenience interface for working with GLSL shader
 -- programs. Provides an interface for setting attributes and
 -- uniforms.
@@ -14,7 +15,9 @@ module Graphics.GLUtil.ShaderProgram
    -- * Working with ShaderProgram parameters
    getAttrib, enableAttrib, setAttrib, setUniform, getUniform) where
 import Prelude hiding (lookup)
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ((<$>), (<*>))
+#endif
 import qualified Data.ByteString as BS
 import Data.List (find, findIndex, isSuffixOf)
 import Data.Map.Strict (Map, fromList, lookup)

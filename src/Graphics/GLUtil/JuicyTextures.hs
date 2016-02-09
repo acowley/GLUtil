@@ -1,10 +1,12 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE CPP, RankNTypes #-}
 -- | Uses the @JuicyPixels@ package to load images that are then used
 -- to create OpenGL textuers.
 module Graphics.GLUtil.JuicyTextures where
 import Codec.Picture (readImage, DynamicImage(..), Image(..))
 import Codec.Picture.Types (convertImage)
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ((<$>))
+#endif
 import Graphics.GLUtil.Textures
 import Graphics.Rendering.OpenGL (TextureObject)
 
