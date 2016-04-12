@@ -1,3 +1,7 @@
+# 0.9.0
+
+* OpenGL 3 dependency bump
+
 # 0.8.8
 
 * Update to `hpp-0.3.0`
