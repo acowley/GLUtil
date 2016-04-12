@@ -18,21 +18,13 @@ class HasVariableType a where
   variableType :: a -> VariableType
 
 instance HasVariableType Float where variableType _ = Float'
-instance HasVariableType GLfloat where variableType _ = Float'
-instance HasVariableType GLint where variableType _ = Int'
 instance HasVariableType Int32 where variableType _ = Int'
 instance HasVariableType Word32 where variableType _ = UnsignedInt'
-instance HasVariableType GLuint where variableType _ = UnsignedInt'
 
 instance HasVariableType (V1 GLfloat) where variableType _ = Float'
 instance HasVariableType (V2 GLfloat) where variableType _ = FloatVec2
 instance HasVariableType (V3 GLfloat) where variableType _ = FloatVec3
 instance HasVariableType (V4 GLfloat) where variableType _ = FloatVec4
-
-instance HasVariableType (V1 GLint) where variableType _ = Int'
-instance HasVariableType (V2 GLint) where variableType _ = IntVec2
-instance HasVariableType (V3 GLint) where variableType _ = IntVec3
-instance HasVariableType (V4 GLint) where variableType _ = IntVec4
 
 instance HasVariableType (V1 Int32) where variableType _ = Int'
 instance HasVariableType (V2 Int32) where variableType _ = IntVec2
@@ -44,16 +36,11 @@ instance HasVariableType (V2 Word32) where variableType _ = UnsignedIntVec2
 instance HasVariableType (V3 Word32) where variableType _ = UnsignedIntVec3
 instance HasVariableType (V4 Word32) where variableType _ = UnsignedIntVec4
 
-instance HasVariableType (V1 GLuint) where variableType _ = UnsignedInt'
-instance HasVariableType (V2 GLuint) where variableType _ = UnsignedIntVec2
-instance HasVariableType (V3 GLuint) where variableType _ = UnsignedIntVec3
-instance HasVariableType (V4 GLuint) where variableType _ = UnsignedIntVec4
-
 instance HasVariableType (M22 GLfloat) where variableType _ = FloatMat2
 instance HasVariableType (M33 GLfloat) where variableType _ = FloatMat3
 instance HasVariableType (M44 GLfloat) where variableType _ = FloatMat4
 
-instance forall t. HasVariableType t => HasVariableType [t] where 
+instance forall t. HasVariableType t => HasVariableType [t] where
   variableType _ = variableType (undefined::t)
 
 -- | Maps each 'VariableType' to its corresponding
@@ -94,6 +81,4 @@ instance HasGLType GLint where glType _ = GL.Int
 instance HasGLType Word8 where glType _ = GL.UnsignedByte
 instance HasGLType Word16 where glType _ = GL.UnsignedShort
 instance HasGLType Word32 where glType _ = GL.UnsignedInt
-instance HasGLType GLuint where glType _ = GL.UnsignedInt
 instance HasGLType Float where glType _ = GL.Float
-instance HasGLType GLfloat where glType _ = GL.Float

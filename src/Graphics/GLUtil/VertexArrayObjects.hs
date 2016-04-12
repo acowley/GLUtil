@@ -1,8 +1,8 @@
 -- | A thin layer over OpenGL 3.1+ vertex array objects.
-module Graphics.GLUtil.VertexArrayObjects 
+module Graphics.GLUtil.VertexArrayObjects
   (makeVAO, withVAO, deleteVAO, deleteVAOs, VAO) where
 import Graphics.Rendering.OpenGL
-import Graphics.Rendering.OpenGL.Raw.Core31 (glDeleteVertexArrays)
+import Graphics.GL.Core31 (glDeleteVertexArrays)
 import Foreign.Marshal.Array (withArrayLen)
 import Foreign.Marshal.Utils (with)
 import Unsafe.Coerce (unsafeCoerce)
@@ -34,6 +34,6 @@ deleteVAO vao = with (vaoID vao) $ glDeleteVertexArrays 1
 
 -- | Delete a list of 'VertexArrayObject's.
 deleteVAOs :: [VertexArrayObject] -> IO ()
-deleteVAOs vaos = withArrayLen (map vaoID vaos) $ 
+deleteVAOs vaos = withArrayLen (map vaoID vaos) $
                     glDeleteVertexArrays . fromIntegral
   where vaoID = unsafeCoerce :: VertexArrayObject -> GLuint

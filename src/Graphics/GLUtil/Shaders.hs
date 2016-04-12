@@ -1,13 +1,13 @@
 -- |Utilities for working with fragment and vertex shader programs.
 module Graphics.GLUtil.Shaders (loadShader, loadShaderBS,
                                 linkShaderProgram, linkShaderProgramWith,
-                                namedUniform, 
-                                uniformScalar, uniformVec, uniformMat, 
+                                namedUniform,
+                                uniformScalar, uniformVec, uniformMat,
                                 namedUniformMat, uniformGLMat4) where
 import Control.Monad (unless)
 import qualified Data.ByteString as BS
 import Graphics.Rendering.OpenGL
-import Graphics.Rendering.OpenGL.Raw.Core31
+import Graphics.GL.Core31
 import Graphics.GLUtil.GLError
 import Foreign.Ptr (Ptr)
 import Unsafe.Coerce (unsafeCoerce)
@@ -108,7 +108,7 @@ uniformMat loc = makeSettableStateVar aux
                        case length mat of
                          4 -> glUniformMatrix4fv loc' 1 1 ptr
                          3 -> glUniformMatrix3fv loc' 1 1 ptr
-                         _ -> ioError . userError $ 
+                         _ -> ioError . userError $
                               "Only 3x3 and 4x4 matrices are supported"
         loc' = unUL loc
 

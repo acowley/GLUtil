@@ -53,8 +53,8 @@ Library
                        filepath,
                        linear >= 1.1.3,
                        JuicyPixels >= 3,
-                       OpenGLRaw >= 1.1,
-                       OpenGL >= 2.9.2 && < 2.14,
+                       OpenGLRaw >= 3.0 && < 3.2,
+                       OpenGL >= 3 && < 3.1,
                        transformers >= 0.3,
                        vector >= 0.7
   if impl(ghc >= 7.10.1)

@@ -7,7 +7,7 @@ import Foreign.Marshal.Array (withArray)
 import Foreign.Marshal.Utils (with)
 import Foreign.Ptr (Ptr, castPtr)
 import Graphics.Rendering.OpenGL
-import Graphics.Rendering.OpenGL.Raw.Core31
+import Graphics.GL.Core31
 import Linear
 import Unsafe.Coerce (unsafeCoerce)
 
