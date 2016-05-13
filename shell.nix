@@ -25,7 +25,15 @@ let
 
   haskellPackages = if compiler == "default"
                        then pkgs.haskellPackages
-                       else pkgs.haskell.packages.${compiler};
+                       else if compiler == "mine"
+                            then pkgs.myHaskellPackages.override {
+                              overrides = self: super: {
+                                OpenGLRaw = self.callPackage ./OpenGLRaw-3.2.0.0 {};
+                                GLURaw = self.callPackage ./GLURaw-2.0.0.2 {};
+                                OpenGL = self.callPackage ./OpenGL-3.0.1.0 {};
+                              };
+                            }
+                            else pkgs.haskell.packages.${compiler};
 
   drv = haskellPackages.callPackage f {};
 
