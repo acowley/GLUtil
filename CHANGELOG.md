@@ -1,3 +1,7 @@
+# 0.9.1
+
+* Bump hpp dependency to address a change in the way GHC 8 invokes the pre-processor.
+
 # 0.9.0
 
 * OpenGL 3 dependency bump
