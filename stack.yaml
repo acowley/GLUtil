@@ -1,5 +1,4 @@
-# resolver: lts-6.4
-resolver: nightly-2016-07-04
+resolver: lts-7.2
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -34,9 +33,8 @@ flags: {}
 # Extra package databases containing global packages
 extra-package-dbs: []
 
-# Control whether we use the GHC we find on the path
-# system-ghc: true
-system-ghc: false
+nix:
+  packages: [zlib, darwin.apple_sdk.frameworks.OpenGL]
 
 # Extra directories used by stack for building
 # extra-include-dirs: [/path/to/dir]
