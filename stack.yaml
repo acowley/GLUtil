@@ -1,15 +1,12 @@
-resolver: lts-9.10
+# resolver: lts-9.10
+resolver: ghc-8.2.2
 packages:
 - '.'
 
-extra-deps:
- - hpp-0.4.0
+extra-deps: []
 
 # Override default flag values for local packages and extra-deps
 flags: {}
 
 # Extra package databases containing global packages
 extra-package-dbs: []
-
-nix:
-  packages: [zlib, darwin.apple_sdk.frameworks.OpenGL]

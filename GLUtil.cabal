@@ -10,7 +10,6 @@ Category:            Graphics
 Build-type:          Simple
 Description:         Helpers for working with shaders, buffer objects, and
                      textures in OpenGL.
-
 Cabal-version:       >=1.6
 
 Extra-Source-Files: examples/example1.hs,
@@ -20,11 +19,8 @@ Extra-Source-Files: examples/example1.hs,
                     examples/shaders/hello-gl.frag,
                     examples/shaders/hello-gl.vert,
                     CHANGELOG.md
+tested-with:        GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.1
 
--- source-repository this
---   type:     git
---   tag:      0.6.2
---   location: http://github.com/acowley/GLUtil.git
 source-repository head
   type:     git
   location: http://github.com/acowley/GLUtil.git
@@ -57,6 +53,7 @@ Library
                        OpenGL >= 3 && < 3.1,
                        transformers >= 0.3,
                        vector >= 0.7
+  build-tool-depends: hpp:hpp
   if (impl(ghc >= 7.10.1) && (!os(windows)))
     Build-depends:     hpp >= 0.3.1 && < 0.6
     GHC-Options:       -pgmPhpp -optP--cpp -optP-P

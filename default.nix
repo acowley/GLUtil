@@ -1,16 +1,15 @@
-{ mkDerivation, array, base, bytestring, containers, hpp
-, directory, filepath, JuicyPixels, linear, OpenGL, OpenGLRaw
-, stdenv, transformers, vector
+{ mkDerivation, array, base, bytestring, containers, directory
+, filepath, hpp, JuicyPixels, linear, OpenGL, OpenGLRaw, stdenv
+, transformers, vector
 }:
 mkDerivation {
   pname = "GLUtil";
-  version = "0.9.0";
+  version = "0.9.3";
   src = ./.;
   libraryHaskellDepends = [
-    array base bytestring containers directory filepath JuicyPixels
-    linear OpenGL OpenGLRaw transformers vector hpp
+    array base bytestring containers directory filepath hpp JuicyPixels
+    linear OpenGL OpenGLRaw transformers vector
   ];
-  libraryToolDepends = [ hpp ];
   description = "Miscellaneous OpenGL utilities";
   license = stdenv.lib.licenses.bsd3;
 }
