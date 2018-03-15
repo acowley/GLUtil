@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.9.3
+Version:             0.10.0
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -10,7 +10,7 @@ Category:            Graphics
 Build-type:          Simple
 Description:         Helpers for working with shaders, buffer objects, and
                      textures in OpenGL.
-Cabal-version:       >=1.6
+Cabal-version:       2.0
 
 Extra-Source-Files: examples/example1.hs,
                     examples/TGA.hs,
@@ -53,13 +53,14 @@ Library
                        OpenGL >= 3 && < 3.1,
                        transformers >= 0.3,
                        vector >= 0.7
-  build-tool-depends: hpp:hpp
   if (impl(ghc >= 7.10.1) && (!os(windows)))
-    Build-depends:     hpp >= 0.3.1 && < 0.6
-    GHC-Options:       -pgmPhpp -optP--cpp -optP-P
+    Build-depends:      hpp >= 0.3.1 && < 0.6
+    Build-tool-depends: hpp:hpp
+    GHC-Options:        -pgmPhpp -optP--cpp -optP-P
   else
-    Build-tools:       cpphs
-    GHC-Options:       -pgmPcpphs -optP--cpp -optP--hashes
+    Build-tool-depends: cpphs:cpphs
+    GHC-Options:        -pgmPcpphs -optP--cpp -optP--hashes
 
   GHC-Options:         -Odph -Wall
   HS-Source-Dirs:      src
+  default-language:    Haskell2010
