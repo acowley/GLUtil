@@ -10,7 +10,7 @@ let
     if withHoogle then
       packageSet.override {
         overrides = (self: super: {
-      ghc = super.ghc // { withPackages = f: super.ghc.withHoogle (ps: f ps ++ [ps.intero ]); };
+      ghc = super.ghc // { withPackages = f: super.ghc.withHoogle (ps: f ps ++ [ps.intero ps.cabal-install]); };
           intero = pkgs.haskell.lib.dontCheck (super.callPackage ~/src/intero {});
           ghcWithPackages = self.ghc.withPackages;
         });

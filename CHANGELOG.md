@@ -1,3 +1,9 @@
+# 0.10.1
+Bump `OpenGLRaw` upper bound
+
+# 0.10.0
+Use Cabal 2.0's `build-tool-depends` field
+
 # 0.9.2
 
 * Don't use `hpp` for preprocessing on Windows

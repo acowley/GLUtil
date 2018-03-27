@@ -4,7 +4,7 @@
 }:
 mkDerivation {
   pname = "GLUtil";
-  version = "0.9.3";
+  version = "0.10.1";
   src = ./.;
   libraryHaskellDepends = [
     array base bytestring containers directory filepath hpp JuicyPixels
