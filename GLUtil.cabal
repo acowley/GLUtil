@@ -61,6 +61,6 @@ Library
     Build-tool-depends: cpphs:cpphs
     GHC-Options:        -pgmPcpphs -optP--cpp -optP--hashes
 
-  GHC-Options:         -Odph -Wall
+  GHC-Options:         -O2 -Wall
   HS-Source-Dirs:      src
   default-language:    Haskell2010
