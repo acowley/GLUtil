@@ -1,7 +1,7 @@
 name:                GLUtil-example1
 version:             0.1.0.0
 synopsis:            Modern OpenGL Tutorial Example 1
--- description:         
+-- description:
 license:             BSD3
 license-file:        LICENSE
 author:              Anthony Cowley
@@ -17,10 +17,10 @@ executable GLUtil-example1
   other-modules:       TGA
   build-depends:       base >= 4.7 && < 5,
                        bytestring >= 0.10 && < 0.11,
-                       binary >= 0.7 && < 0.8,
+                       binary >= 0.7 && < 0.10,
                        filepath,
                        OpenGL,
-                       GLUtil >= 0.8.2 && < 0.9,
+                       GLUtil >= 0.8.2 && < 0.11,
                        GLFW-b >= 1.4 && < 1.5
   hs-source-dirs:      .
   default-language:    Haskell2010
