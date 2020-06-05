@@ -56,7 +56,12 @@ Library
   if (impl(ghc >= 7.10.1) && (!os(windows)))
     Build-depends:      hpp >= 0.3.1 && < 0.7
     Build-tool-depends: hpp:hpp
-    GHC-Options:        -pgmPhpp -optP--cpp -optP-P
+    if impl(ghc >= 8.8.1)
+      -- As of GHC 8.8.1, GHC started complaining about -optP--cpp when profling
+      -- is enabled. See https://gitlab.haskell.org/ghc/ghc/issues/17185.
+      GHC-Options:        -pgmP "hpp --cpp -P"
+    else
+      GHC-Options:        -pgmPhpp -optP--cpp -optP-P
   else
     Build-tool-depends: cpphs:cpphs
     GHC-Options:        -pgmPcpphs -optP--cpp -optP--hashes
