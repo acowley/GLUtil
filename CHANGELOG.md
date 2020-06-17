@@ -1,3 +1,8 @@
+# 0.10.4
+
+- Fix profiled builds with GHC >= 8.8 (@maoe)
+- Fix floating point RGBA texture support
+
 # 0.10.1
 Bump `OpenGLRaw` upper bound
 
