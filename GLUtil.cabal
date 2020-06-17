@@ -19,7 +19,8 @@ Extra-Source-Files: examples/example1.hs,
                     examples/shaders/hello-gl.frag,
                     examples/shaders/hello-gl.vert,
                     CHANGELOG.md
-tested-with:        GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.1
+tested-with:        GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3,
+                    GHC == 8.6.5, GHC == 8.8.3, GHC == 8.10.1
 
 source-repository head
   type:     git
