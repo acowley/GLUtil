@@ -15,7 +15,7 @@ import TGA -- Small library for TGA file handling
 -- | A value to carry around a shader program and its parameters.
 data Shaders = Shaders { getProgram        :: Program
                        , fadeFactorU    :: UniformLocation
-                       , texturesU      :: [UniformLocation] 
+                       , texturesU      :: [UniformLocation]
                        , positionA      :: AttribLocation }
 
 -- | The resources used for drawing our scene.
@@ -31,7 +31,7 @@ vertexBufferData = [-1, -1, 1, -1, -1, 1, 1, 1]
 
 -- | Load a texture and set some texturing parameters.
 makeTexture :: FilePath -> IO TextureObject
-makeTexture filename = 
+makeTexture filename =
     do (width,height,pixels) <- readTGA filename
        tex <- loadTexture $ texInfo width height TexBGR pixels
        textureFilter   Texture2D   $= ((Linear', Nothing), Linear')
@@ -42,21 +42,22 @@ makeTexture filename =
 -- | Load and compile our GLSL program, and pull out the parameters we
 -- want.
 initShaders :: IO Shaders
-initShaders = do vs <- loadShader VertexShader $ "shaders" </> "hello-gl.vert"
-                 fs <- loadShader FragmentShader $ "shaders" </> "hello-gl.frag"
+initShaders = do vs <- loadShader VertexShader $ shaderDir </> "hello-gl.vert"
+                 fs <- loadShader FragmentShader $ shaderDir </> "hello-gl.frag"
                  p <- linkShaderProgram [vs,fs]
                  Shaders p
                    <$> get (uniformLocation p "fade_factor")
                    <*> mapM (get . uniformLocation p)
                          ["textures[0]", "textures[1]"]
                    <*> get (attribLocation p "position")
+  where shaderDir = "examples" </> "shaders"
 
 -- | Load our geometry and textures into OpenGL.
 makeResources :: IO Resources
 makeResources =  Resources
              <$> makeBuffer ArrayBuffer vertexBufferData
              <*> makeBuffer ElementArrayBuffer [0..3::GLuint]
-             <*> mapM (makeTexture . ("images" </>)) 
+             <*> mapM (makeTexture . (("examples" </> "images") </>))
                       ["hello1.tga", "hello2.tga"]
              <*> initShaders
              <*> pure 0.0
@@ -102,7 +103,7 @@ animate r = do Just seconds <- getTime
 main :: IO ()
 main = do ok <- init
           when (not ok) (error "Error initializing GLFW!")
-          windowHint $ WindowHint'RefreshRate 100
+          windowHint $ WindowHint'RefreshRate (Just 100)
           m@(~(Just w)) <- createWindow 500 500 "Chapter 2" Nothing Nothing
           when (isNothing m) (error "Couldn't create window!")
           makeContextCurrent m

@@ -1,5 +1,5 @@
 Name:                GLUtil
-Version:             0.10.3
+Version:             0.10.4
 Synopsis:            Miscellaneous OpenGL utilities.
 License:             BSD3
 License-file:        LICENSE
@@ -25,6 +25,11 @@ tested-with:        GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2, GHC == 8.4.3,
 source-repository head
   type:     git
   location: http://github.com/acowley/GLUtil.git
+
+flag demos
+  description: Build demonstration programs
+  default:     False
+  manual:      True
 
 Library
   Exposed-modules:     Graphics.GLUtil,
@@ -55,8 +60,8 @@ Library
                        transformers >= 0.3,
                        vector >= 0.7
   if (impl(ghc >= 7.10.1) && (!os(windows)))
-    Build-depends:      hpp >= 0.3.1 && < 0.7
-    Build-tool-depends: hpp:hpp
+    -- Build-depends:      hpp >= 0.3.1 && < 0.7
+    Build-tool-depends: hpp:hpp >= 0.3.1 && < 0.7
     if impl(ghc >= 8.8.1)
       -- As of GHC 8.8.1, GHC started complaining about -optP--cpp when profling
       -- is enabled. See https://gitlab.haskell.org/ghc/ghc/issues/17185.
@@ -70,3 +75,13 @@ Library
   GHC-Options:         -O2 -Wall
   HS-Source-Dirs:      src
   default-language:    Haskell2010
+
+executable example1
+  if !flag(demos)
+    buildable: False
+  main-is: example1.hs
+  other-modules: TGA
+  build-depends: base, bytestring, binary, filepath, OpenGL, GLUtil
+               , GLFW-b >= 3.3.0.0 && < 3.4
+  hs-source-dirs: examples
+  default-language: Haskell2010
