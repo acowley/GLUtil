@@ -111,7 +111,13 @@ reloadTexture obj tex = do textureBinding Texture2D $= Just obj
                           _ -> error "Unknown pixelType for TexRG"
         loadTex TexRGB = loadAux RGBA' RGB
         loadTex TexBGR = loadAux RGBA' BGR
-        loadTex TexRGBA = loadAux RGBA' RGBA
+        loadTex TexRGBA = case pixelType of
+                            GL.UnsignedShort -> loadAux RGBA16 RGBA
+                            GL.Float -> loadAux RGBA32F RGBA
+                            GL.HalfFloat -> loadAux RGBA16F RGBA
+                            GL.Int -> loadAux RGBA32I RGBAInteger
+                            GL.UnsignedInt -> loadAux RGBA32UI RGBAInteger
+                            _ -> loadAux RGBA' RGBA
         sz = TextureSize2D (texWidth tex) (texHeight tex)
         pixelType = glType (undefined::Elem a)
         loadAux i e = withPixels (texData tex) $ 
